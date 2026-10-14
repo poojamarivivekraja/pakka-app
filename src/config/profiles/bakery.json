@@ -1,0 +1,102 @@
+{
+  "id": "bakery",
+  "name": "Home bakery",
+  "fields": [
+    {
+      "key": "occasion",
+      "label": "Occasion",
+      "type": "text",
+      "required": false
+    },
+    {
+      "key": "items_summary",
+      "label": "Items",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "due_date",
+      "label": "Due date",
+      "type": "date",
+      "required": true
+    },
+    {
+      "key": "due_time",
+      "label": "Time",
+      "type": "time",
+      "required": true
+    },
+    {
+      "key": "fulfilment",
+      "label": "Fulfilment",
+      "type": "enum",
+      "required": true,
+      "options": [
+        "pickup",
+        "delivery",
+        "courier"
+      ]
+    },
+    {
+      "key": "address",
+      "label": "Address",
+      "type": "text",
+      "required": false,
+      "required_when": {
+        "field": "fulfilment",
+        "in": [
+          "delivery",
+          "courier"
+        ]
+      }
+    },
+    {
+      "key": "tracking_number",
+      "label": "Tracking number",
+      "type": "text",
+      "required": false
+    },
+    {
+      "key": "price_agreed",
+      "label": "Price agreed",
+      "type": "money",
+      "required": true
+    },
+    {
+      "key": "advance_requested",
+      "label": "Advance requested",
+      "type": "money",
+      "required": false
+    },
+    {
+      "key": "size_or_weight",
+      "label": "Size / weight",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "flavour",
+      "label": "Flavour",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "dietary",
+      "label": "Dietary",
+      "type": "text",
+      "required": false
+    },
+    {
+      "key": "design_notes",
+      "label": "Design notes",
+      "type": "text",
+      "required": false
+    },
+    {
+      "key": "personalisation",
+      "label": "Message on cake",
+      "type": "exact_text",
+      "required": false
+    }
+  ]
+}
