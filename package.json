@@ -19,7 +19,8 @@
     "check:order-detail": "tsx --conditions=react-server scripts/check-order-detail.ts",
     "check:source-sheet": "tsx scripts/check-source-sheet.tsx",
     "check:chats-view": "tsx --conditions=react-server scripts/check-chats-view.ts",
-    "check:settings": "tsx --conditions=react-server scripts/check-settings.ts"
+    "check:settings": "tsx --conditions=react-server scripts/check-settings.ts",
+    "eval": "tsx --conditions=react-server scripts/eval.ts"
   },
   "dependencies": {
     "@google/genai": "^2.29.1",
