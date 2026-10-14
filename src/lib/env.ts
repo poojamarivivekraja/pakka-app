@@ -23,6 +23,14 @@ export const env = {
   get llmModel() {
     return required("LLM_MODEL");
   },
+  /** off | low | default. Unset means off (the lowest the model allows). */
+  get llmThinking(): "off" | "low" | "default" {
+    const v = (process.env.LLM_THINKING || "off").trim().toLowerCase();
+    if (v !== "off" && v !== "low" && v !== "default") {
+      throw new Error(`LLM_THINKING must be off, low or default, got "${v}"`);
+    }
+    return v;
+  },
   get demoPasscode() {
     return required("DEMO_PASSCODE");
   },

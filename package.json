@@ -7,9 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "check:profiles": "tsx scripts/check-profiles.ts"
+    "check:profiles": "tsx scripts/check-profiles.ts",
+    "check": "npm run -s check:profiles && npm run -s check:llm",
+    "check:llm": "tsx --conditions=react-server scripts/check-llm.ts"
   },
   "dependencies": {
+    "@google/genai": "^2.29.1",
     "@supabase/supabase-js": "^2.117.3",
     "next": "16.4.0",
     "react": "19.3.0",
