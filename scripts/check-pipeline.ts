@@ -224,6 +224,56 @@ const openOf = (d: OrderDraft, type: string) => openFlags(d).filter((f) => f.typ
   check("rule 10: unsupported message adds message_unreadable flag", o3.flags.some((f) => f.type === "message_unreadable" && f.detail === "1 message couldn't be read. Check WhatsApp."));
 }
 
+// ---- Rule 10: edit linking and the business-replied rule
+{
+  const edited = (original: MessageCtx, text: string) => ({ ...original, body: text });
+  const setup = (direction: "in" | "out" = "in") => {
+    const original = msg("Hi, 2 kg butterscotch cake", direction, "2026-10-21T08:30:00Z");
+    const o = orderWith({});
+    o.order.fields.size_or_weight = val("2 kg", original.id);
+    return { original, o, w: ws(o) };
+  };
+  const sizeUpdate = (agreed = false) => upd("size_or_weight", "1.5 kg", "1.5 kg butterscotch", { agreed_by_business: agreed });
+
+  for (const ref of ["NEW", "NONE"]) {
+    const { original, o, w } = setup();
+    applyEditedMessage(w, result({ order_ref: ref, field_updates: [sizeUpdate()] }), edited(original, "Hi, 1.5 kg butterscotch cake"));
+    check(`rule 10: edit where the model says ${ref} still goes to the order it came from`,
+      w.orders.length === 1 && o.order.fields.size_or_weight.value === "1.5 kg" && o.newPending.length === 0);
+  }
+
+  {
+    const { original, o, w } = setup();
+    applyEditedMessage(w, result({ order_ref: "NEW", link_confidence: "low", candidate_order_ids: ["x"], field_updates: [sizeUpdate()] }),
+      edited(original, "Hi, 1.5 kg butterscotch cake"));
+    check("rule 10: a low-confidence link on an edit does not stop it applying", o.order.fields.size_or_weight.value === "1.5 kg" && !o.flags.some((f) => f.type === "which_order"));
+  }
+
+  {
+    const { original, o, w } = setup();
+    applyEditedMessage(w, result({ order_ref: o.order.id, field_updates: [sizeUpdate(true)] }),
+      edited(original, "Hi, 1.5 kg butterscotch cake"), { businessRepliedSince: true });
+    check("rule 10: after a business reply, an edited value is not applied", o.order.fields.size_or_weight.value === "2 kg");
+    check("rule 10: after a business reply, it becomes a pending request", openPending(o).length === 1 && openPending(o)[0].requested_value === "1.5 kg");
+    check("rule 10: after a business reply, the edit note is still added", o.newNotes.some((n) => n.text === "Customer edited a message"));
+    check("rule 10: an edit never counts as the business agreeing", o.newNotes.every((n) => !n.text.includes("Agreed in chat")) && openFlags(o).every((f) => f.type !== "conflict"));
+  }
+
+  {
+    const { original, o, w } = setup("out");
+    applyEditedMessage(w, result({ order_ref: o.order.id, field_updates: [sizeUpdate(true)] }),
+      edited(original, "Hi, 1.5 kg butterscotch cake"), { businessRepliedSince: true });
+    check("rule 10: the business editing its own message applies directly", o.order.fields.size_or_weight.value === "1.5 kg");
+  }
+
+  {
+    const original = msg("Hi, 2 kg butterscotch cake", "in", "2026-10-21T08:30:00Z");
+    const w = ws();
+    applyEditedMessage(w, result({ order_ref: "NEW", field_updates: [upd("size_or_weight", "1.5 kg", "1.5 kg butterscotch")] }), edited(original, "Hi, 1.5 kg butterscotch cake"));
+    check("rule 10: an edit of a message that filled in no order is processed normally", w.orders.length === 1 && w.orders[0].isNew);
+  }
+}
+
 // ---- Rule 11: missing fields
 {
   const o = orderWith({});
@@ -265,6 +315,7 @@ const openOf = (d: OrderDraft, type: string) => openFlags(d).filter((f) => f.typ
 }
 
 // ---- Prompt
+check("prompt: tells the model about edited messages", EXTRACTION_SYSTEM_PROMPT.includes("edit_of_earlier_message"));
 check("prompt: includes the pickup/delivery time rule", EXTRACTION_SYSTEM_PROMPT.includes("hours 1 to 8 mean pm") && EXTRACTION_SYSTEM_PROMPT.includes('"around 6"'));
 
 // ---- Helpers

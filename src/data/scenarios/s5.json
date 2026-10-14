@@ -1,0 +1,55 @@
+{
+  "id": "s5",
+  "name": "Conflict and gaps",
+  "customer": {
+    "name": "Karthik",
+    "wa_id": "919900000005"
+  },
+  "messages": [
+    {
+      "timestamp": "2026-10-23T16:00:00+05:30",
+      "sender": "customer",
+      "text": "Need 2 kg black forest for my dad's 60th, Sunday 1st Nov"
+    },
+    {
+      "timestamp": "2026-10-23T16:20:00+05:30",
+      "sender": "business",
+      "text": "That'll be ₹1800 with the gold topper"
+    },
+    {
+      "timestamp": "2026-10-24T10:00:00+05:30",
+      "sender": "customer",
+      "text": "Ok. Delivery to Velachery"
+    },
+    {
+      "timestamp": "2026-10-24T10:05:00+05:30",
+      "sender": "customer",
+      "text": "Btw you said 1600 na?"
+    }
+  ],
+  "expected": [
+    {
+      "label": "conflict flag on price_agreed",
+      "type": "flag_exists",
+      "flag_type": "conflict",
+      "field": "price_agreed"
+    },
+    {
+      "label": "price stays 1800",
+      "type": "field",
+      "field": "price_agreed",
+      "money": 1800
+    },
+    {
+      "label": "missing_field flag for due_time",
+      "type": "flag_exists",
+      "flag_type": "missing_field",
+      "field": "due_time"
+    },
+    {
+      "label": "status is needs_review",
+      "type": "status",
+      "equals": "needs_review"
+    }
+  ]
+}

@@ -11,6 +11,8 @@ export type FieldType =
 export type ProfileField = {
   key: string;
   label: string;
+  /** Short plain-language meaning of the field. Sent to the model with every message. */
+  description: string;
   type: FieldType;
   required: boolean;
   /** For enum fields: the allowed values. */

@@ -11,7 +11,8 @@
     "check": "npm run -s check:profiles && npm run -s check:pipeline && npm run -s check:pipeline-db && npm run -s check:llm",
     "check:llm": "tsx --conditions=react-server scripts/check-llm.ts",
     "check:pipeline": "tsx --conditions=react-server scripts/check-pipeline.ts",
-    "check:pipeline-db": "tsx --conditions=react-server scripts/check-pipeline-db.ts"
+    "check:pipeline-db": "tsx --conditions=react-server scripts/check-pipeline-db.ts",
+    "scenario": "tsx --conditions=react-server scripts/run-scenario.ts"
   },
   "dependencies": {
     "@google/genai": "^2.29.1",
@@ -29,6 +30,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.0",
+    "sharp": "^0.35.5",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "^5"

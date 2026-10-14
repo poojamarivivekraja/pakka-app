@@ -45,9 +45,15 @@ message's own timestamp.
 ## 3. Business profiles
 
 Config files in `src/config/profiles/`: `bakery.json` and `saree.json`. Each field has
-`key`, `label`, `type` (text | exact_text | measurement | money | date | time | enum | items)
-and `required` (true/false; address is required only when fulfilment is delivery or
-courier). The active profile is stored in the `settings` table.
+`key`, `label`, `description` (one or two plain sentences saying what belongs in the
+field, with examples that differ from the test scenarios; sent to the model with every
+message, for every field alike), `type` (text | exact_text | measurement | money | date |
+time | enum | items) and `required` (true/false; address is required only when fulfilment
+is delivery or courier). Times are stored as 24-hour HH:MM. items_summary's description
+says it is a one-line summary of what was ordered, in the message's own words, filled as
+soon as any message says what is ordered (even when the same message also gives size or
+flavour), and never adding a product word that isn't in the chat. occasion's description
+says it is the event or reason in a word or two, never the product. The active profile is stored in the `settings` table.
 
 Universal fields (every profile):
 - occasion (text, optional)
@@ -97,11 +103,12 @@ the business's orders. You never write replies to customers. You output JSON onl
 CONTEXT YOU RECEIVE
 - business_name, today's date, the new message's timestamp
 - sender: "customer" or "business"
-- the business profile's field list (keys, labels, types)
+- the business profile's field list (keys, labels, types, descriptions)
 - the customer's open orders: id and current field values
 - open pending requests for those orders: id, order id, field, requested value
 - the last 15 messages in this chat, oldest first, each with id and sender
 - for images: the image and any caption
+- for an edited message: the earlier text and the orders it filled in
 
 YOUR TASKS
 1. Classify: new_order | order_detail | change | payment | agreement | refusal |
@@ -109,7 +116,8 @@ YOUR TASKS
 2. Link to an order: an existing order id, "NEW" for a separate new order, or "NONE".
    If the customer has more than one open order and it's unclear which one, set
    link_confidence "low" and list candidate_order_ids.
-3. Extract field updates using ONLY the profile's field keys.
+3. Extract field updates using ONLY the profile's field keys. Each field's description
+   says what belongs in it.
 4. If a business message agrees to or refuses an open pending request, list its id in
    agrees_to_pending or refuses_pending.
 5. For images, decide image_role: reference_image | payment_screenshot | other.
@@ -133,6 +141,9 @@ STRICT RULES
 - exact_text fields: copy spelling exactly, including the customer's own spelling.
 - A payment screenshot is never proof of payment. Report what it shows; never say "paid".
 - Messages may be English, Hinglish or mixed, with typos. If unsure, set confidence "low".
+- If the context has edit_of_earlier_message, the new message is a corrected version of
+  that earlier message. Link it to the orders listed there and report every value the
+  corrected message states.
 
 OUTPUT (JSON only)
 {
@@ -177,7 +188,12 @@ OUTPUT (JSON only)
    "Mark as received" button.
 9. Reference image: create an attachment with the description.
 10. Edit event: reprocess the edited text and add an update_note ("Customer edited a
-    message"). Revoke event: add a message_deleted flag and set confidence "low" on
+    message"). An edit replaces the original, so it is applied to the one order that the
+    original message filled in, whatever the model says about the link (NEW and NONE are
+    ignored). A customer edit changes values directly only if the business has not replied
+    since the original message; if the business has replied, each changed value becomes a
+    pending request instead (an edit never counts as the business agreeing). A business
+    editing its own message applies directly. Revoke event: add a message_deleted flag and set confidence "low" on
     fields sourced from that message. Unsupported event (WhatsApp error 131060): add a
     message_unreadable flag ("1 message couldn't be read. Check WhatsApp.").
 11. Missing fields: after every update, recompute missing required fields. Keep exactly
@@ -227,7 +243,7 @@ previous_value chocolate, an update_note exists, the pending request is resolved
 S3 Edited message (customer Farah, +91 99000 00003)
 - [Wed 21 Oct 14:00] C: Hi, 2 kg butterscotch cake for office farewell, Friday 30th, delivery 4 pm
 - [14:03] event edit of the 14:00 message, new text: "Hi, 1.5 kg butterscotch cake for office farewell, Friday 30th, delivery 4 pm"
-Expected: size 1.5 kg; an update_note about the edit; missing_field flags for
+Expected: exactly one order; size 1.5 kg; an update_note about the edit; missing_field flags for
 price_agreed and address; status needs_review.
 
 S4 Two orders from one customer (customer Sneha, +91 99000 00004)

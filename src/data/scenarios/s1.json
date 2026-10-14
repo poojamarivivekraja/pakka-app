@@ -1,0 +1,136 @@
+{
+  "id": "s1",
+  "name": "Clean order",
+  "customer": {
+    "name": "Priya",
+    "wa_id": "919900000001"
+  },
+  "messages": [
+    {
+      "timestamp": "2026-10-19T10:02:00+05:30",
+      "sender": "customer",
+      "text": "Hi! Saw your page on insta. Do you make theme cakes?"
+    },
+    {
+      "timestamp": "2026-10-19T10:15:00+05:30",
+      "sender": "business",
+      "text": "Hi Priya! Yes we do 😊 What's the occasion and date?"
+    },
+    {
+      "timestamp": "2026-10-19T10:17:00+05:30",
+      "sender": "customer",
+      "text": "My son's 5th birthday, Saturday 24th. Want a jungle theme"
+    },
+    {
+      "timestamp": "2026-10-19T10:18:00+05:30",
+      "sender": "customer",
+      "image": "samples/reference_jungle.jpg"
+    },
+    {
+      "timestamp": "2026-10-19T10:25:00+05:30",
+      "sender": "business",
+      "text": "Lovely! For 1 kg chocolate truffle with this design it's ₹1400"
+    },
+    {
+      "timestamp": "2026-10-19T10:30:00+05:30",
+      "sender": "customer",
+      "text": "Ok done. Write \"Happy 5th Birthday Aarav\" on it"
+    },
+    {
+      "timestamp": "2026-10-19T10:31:00+05:30",
+      "sender": "customer",
+      "text": "Pickup at 5 pm is fine?"
+    },
+    {
+      "timestamp": "2026-10-19T10:40:00+05:30",
+      "sender": "business",
+      "text": "Perfect. Please send ₹700 advance to confirm"
+    },
+    {
+      "timestamp": "2026-10-19T11:02:00+05:30",
+      "sender": "customer",
+      "image": "samples/payment_700.png"
+    }
+  ],
+  "expected": [
+    {
+      "label": "one order",
+      "type": "order_count",
+      "equals": 1
+    },
+    {
+      "label": "all required fields filled",
+      "type": "required_fields_filled"
+    },
+    {
+      "label": "due date is 2026-10-24",
+      "type": "field",
+      "field": "due_date",
+      "equals": "2026-10-24"
+    },
+    {
+      "label": "due time is 5 pm",
+      "type": "field",
+      "field": "due_time",
+      "time": "17:00"
+    },
+    {
+      "label": "fulfilment is pickup",
+      "type": "field",
+      "field": "fulfilment",
+      "equals": "pickup"
+    },
+    {
+      "label": "price agreed is 1400",
+      "type": "field",
+      "field": "price_agreed",
+      "money": 1400
+    },
+    {
+      "label": "advance requested is 700",
+      "type": "field",
+      "field": "advance_requested",
+      "money": 700
+    },
+    {
+      "label": "flavour mentions chocolate",
+      "type": "field",
+      "field": "flavour",
+      "contains": "chocolate"
+    },
+    {
+      "label": "personalisation is exactly the customer's words",
+      "type": "field",
+      "field": "personalisation",
+      "exact": "Happy 5th Birthday Aarav"
+    },
+    {
+      "label": "one reference image attached",
+      "type": "attachment",
+      "kind": "reference_image",
+      "count": 1
+    },
+    {
+      "label": "payment attachment of 700, not verified",
+      "type": "attachment",
+      "kind": "payment_screenshot",
+      "count": 1,
+      "amount": 700,
+      "marked_received": false
+    },
+    {
+      "label": "no open flags",
+      "type": "no_open_flags"
+    },
+    {
+      "label": "status is ready",
+      "type": "status",
+      "equals": "ready"
+    },
+    {
+      "label": "balance is 700",
+      "type": "balance",
+      "equals": 700
+    }
+  ]
+}

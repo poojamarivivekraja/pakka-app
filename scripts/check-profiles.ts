@@ -28,6 +28,7 @@ for (const [id, p] of Object.entries(PROFILES)) {
   check(`${id}: keys are unique`, new Set(keys).size === keys.length);
   check(`${id}: all types valid`, p.fields.every((f) => types.includes(f.type)));
   check(`${id}: enum fields have options`, p.fields.every((f) => f.type !== "enum" || f.options?.length));
+  check(`${id}: every field has a description`, p.fields.every((f) => typeof f.description === "string" && f.description.trim().length > 10));
   const adv = p.fields.find((f) => f.key === "advance_requested");
   check(`${id}: advance_requested is optional money`, adv?.type === "money" && adv.required === false);
 }

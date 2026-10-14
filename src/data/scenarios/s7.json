@@ -1,0 +1,28 @@
+{
+  "id": "s7",
+  "name": "Small talk (continues S1)",
+  "continues": "s1",
+  "customer": {
+    "name": "Priya",
+    "wa_id": "919900000001"
+  },
+  "messages": [
+    {
+      "timestamp": "2026-10-25T20:00:00+05:30",
+      "sender": "customer",
+      "text": "Thank you so much! Cake was super yummy, Aarav loved it 😍"
+    }
+  ],
+  "expected": [
+    {
+      "label": "message_type is small_talk",
+      "type": "message_type",
+      "message": 1,
+      "equals": "small_talk"
+    },
+    {
+      "label": "no field changes, flags or notes",
+      "type": "no_changes"
+    }
+  ]
+}

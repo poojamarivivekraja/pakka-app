@@ -128,3 +128,13 @@ export async function saveWorkspace(ws: Workspace) {
     }
   }
 }
+
+/** Has the business sent any message to this customer after `sentAt`? */
+export async function businessRepliedAfter(customerId: string, sentAt: string): Promise<boolean> {
+  const rows = check(
+    await getSupabase().from("messages").select("id").eq("customer_id", customerId)
+      .eq("direction", "out").gt("sent_at", sentAt).limit(1),
+    "check business replies",
+  ) as { id: string }[];
+  return rows.length > 0;
+}

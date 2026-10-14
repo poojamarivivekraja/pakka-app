@@ -35,10 +35,29 @@ export function finaliseChanged(ws: Workspace, messageId: string) {
   for (const d of ws.orders) if (hasChanges(d)) finaliseOrder(ws, d, messageId);
 }
 
-/** Rule 10 (edit): reprocess the edited text in place of the original, then note the edit. */
-export function applyEditedMessage(ws: Workspace, result: ModelResult, original: MessageCtx) {
+/**
+ * Rule 10 (edit): reprocess the edited text in place of the original, then note the edit.
+ * - An edit replaces the original, so it is applied to the one order that text filled in,
+ *   whatever the model says about the link.
+ * - A customer edit changes values directly only if the business has not replied since the
+ *   original. After a reply the business has seen the old text, so each changed value
+ *   becomes a pending request instead (an edit can never count as the business agreeing).
+ */
+export function applyEditedMessage(
+  ws: Workspace, result: ModelResult, original: MessageCtx, opts: { businessRepliedSince?: boolean } = {},
+) {
   const before = ordersUsingMessage(ws, original.id);
-  const { draft } = applyExtraction(ws, result, original, { replaceSourceMessageId: original.id });
+  const locked = original.direction === "in" && !!opts.businessRepliedSince;
+
+  let adjusted: ModelResult = result;
+  if (before.length === 1) {
+    adjusted = { ...adjusted, order_ref: before[0].order.id, link_confidence: "high", candidate_order_ids: [] };
+  }
+  if (locked) {
+    adjusted = { ...adjusted, field_updates: adjusted.field_updates.map((u) => ({ ...u, agreed_by_business: false })) };
+  }
+
+  const { draft } = applyExtraction(ws, adjusted, original, locked ? {} : { replaceSourceMessageId: original.id });
   const affected = new Set<OrderDraft>(before);
   if (draft) affected.add(draft);
   addEditNote([...affected], original.id, original.direction === "in");

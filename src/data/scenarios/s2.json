@@ -1,0 +1,114 @@
+{
+  "id": "s2",
+  "name": "Change agreed in chat",
+  "customer": {
+    "name": "Rahul",
+    "wa_id": "919900000002"
+  },
+  "messages": [
+    {
+      "timestamp": "2026-10-20T18:10:00+05:30",
+      "sender": "customer",
+      "text": "Need a cake for our anniversary on 31st"
+    },
+    {
+      "timestamp": "2026-10-20T18:22:00+05:30",
+      "sender": "business",
+      "text": "Congrats! Which flavour and size?"
+    },
+    {
+      "timestamp": "2026-10-20T18:25:00+05:30",
+      "sender": "customer",
+      "text": "Chocolate, 1.5 kg. Delivery to Anna Nagar at 7 pm"
+    },
+    {
+      "timestamp": "2026-10-20T18:30:00+05:30",
+      "sender": "business",
+      "text": "Done, ₹1800. Message on cake?"
+    },
+    {
+      "timestamp": "2026-10-20T18:32:00+05:30",
+      "sender": "customer",
+      "text": "\"Happy Anniversery Meera\""
+    },
+    {
+      "timestamp": "2026-10-22T09:05:00+05:30",
+      "sender": "customer",
+      "text": "Hey small change, make it red velvet instead. And eggless please, her mom is joining"
+    },
+    {
+      "timestamp": "2026-10-22T09:20:00+05:30",
+      "sender": "business",
+      "text": "Ok red velvet eggless done, no extra charge"
+    }
+  ],
+  "expected": [
+    {
+      "label": "after 09:05: flavour is still chocolate",
+      "type": "field",
+      "after": 6,
+      "field": "flavour",
+      "contains": "chocolate"
+    },
+    {
+      "label": "after 09:05: a pending request for red velvet is open",
+      "type": "pending",
+      "after": 6,
+      "field": "flavour",
+      "requested_contains": "red velvet",
+      "state": "open"
+    },
+    {
+      "label": "after 09:05: dietary eggless applied (it was empty)",
+      "type": "field",
+      "after": 6,
+      "field": "dietary",
+      "contains": "eggless"
+    },
+    {
+      "label": "after 09:20: flavour is red velvet",
+      "type": "field",
+      "field": "flavour",
+      "contains": "red velvet"
+    },
+    {
+      "label": "after 09:20: previous value is chocolate",
+      "type": "field",
+      "field": "flavour",
+      "previous_contains": "chocolate"
+    },
+    {
+      "label": "an update note about the change exists",
+      "type": "note",
+      "contains": "red velvet"
+    },
+    {
+      "label": "the pending request is resolved as agreed",
+      "type": "pending",
+      "field": "flavour",
+      "requested_contains": "red velvet",
+      "state": "agreed"
+    },
+    {
+      "label": "no flag for the change",
+      "type": "flag_absent",
+      "flag_types": [
+        "conflict",
+        "low_confidence",
+        "which_order"
+      ]
+    },
+    {
+      "label": "personalisation keeps the spelling 'Anniversery'",
+      "type": "field",
+      "field": "personalisation",
+      "exact": "Happy Anniversery Meera"
+    },
+    {
+      "label": "address Anna Nagar is stored",
+      "type": "field",
+      "field": "address",
+      "contains": "Anna Nagar"
+    }
+  ]
+}

@@ -5,30 +5,35 @@
     {
       "key": "occasion",
       "label": "Occasion",
+      "description": "The event or reason the order is for, in a word or two. Never the product itself. Examples: baby shower, Diwali gifting, housewarming.",
       "type": "text",
       "required": false
     },
     {
       "key": "items_summary",
       "label": "Items",
+      "description": "A one-line summary of what was ordered, in the message's own words. Fill it as soon as any message says what is ordered, even when the same message also gives size or flavour (repeat them here). Never add a product word that is not in the chat. Examples: a box of 12 brownies, a dozen donuts, 2 sarees.",
       "type": "text",
       "required": true
     },
     {
       "key": "due_date",
       "label": "Due date",
+      "description": "The day the customer needs the order, as an ISO date (YYYY-MM-DD). Resolve words like \"next Tuesday\" against the message date.",
       "type": "date",
       "required": true
     },
     {
       "key": "due_time",
       "label": "Time",
+      "description": "The time of day for pickup or delivery, as 24-hour HH:MM. Examples: 11 am is 11:00, 3 pm is 15:00.",
       "type": "time",
       "required": true
     },
     {
       "key": "fulfilment",
       "label": "Fulfilment",
+      "description": "How the customer gets the order: pickup (they collect it), delivery (the business delivers it) or courier (sent through a courier service).",
       "type": "enum",
       "required": true,
       "options": [
@@ -40,6 +45,7 @@
     {
       "key": "address",
       "label": "Address",
+      "description": "Where the order is delivered or couriered. Only needed for delivery or courier. Example: Flat 4B, Lotus Residency, Koramangala.",
       "type": "text",
       "required": false,
       "required_when": {
@@ -53,48 +59,56 @@
     {
       "key": "tracking_number",
       "label": "Tracking number",
+      "description": "The courier's tracking or consignment number, once the order has been shipped.",
       "type": "text",
       "required": false
     },
     {
       "key": "price_agreed",
       "label": "Price agreed",
+      "description": "The total price the business and customer agreed for the whole order, copied as written. Example: ₹2500.",
       "type": "money",
       "required": true
     },
     {
       "key": "advance_requested",
       "label": "Advance requested",
+      "description": "The advance amount the business asks the customer to pay, copied as the business wrote it. Fill it only when the business states an amount. Example: ₹1000.",
       "type": "money",
       "required": false
     },
     {
       "key": "size_or_weight",
       "label": "Size / weight",
+      "description": "How big the order is: weight, tiers or servings. Examples: 3 kg, two-tier, serves 20.",
       "type": "text",
       "required": true
     },
     {
       "key": "flavour",
       "label": "Flavour",
+      "description": "The flavour of the cake or sweet. Examples: pineapple, mango, coffee walnut.",
       "type": "text",
       "required": true
     },
     {
       "key": "dietary",
       "label": "Dietary",
+      "description": "Dietary needs or restrictions. Examples: sugar-free, vegan, no nuts.",
       "type": "text",
       "required": false
     },
     {
       "key": "design_notes",
       "label": "Design notes",
+      "description": "Design, theme, colours or decorations the customer wants, other than words to be written. Examples: superhero motif, pastel flowers, silver stars.",
       "type": "text",
       "required": false
     },
     {
       "key": "personalisation",
       "label": "Message on cake",
+      "description": "The exact words to be written on the cake, copied letter for letter, including the customer's own spelling and capitals. Example: Congratulations Dr. Nisha.",
       "type": "exact_text",
       "required": false
     }

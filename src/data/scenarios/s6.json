@@ -1,0 +1,51 @@
+{
+  "id": "s6",
+  "name": "Payment mismatch (continues S2)",
+  "continues": "s2",
+  "customer": {
+    "name": "Rahul",
+    "wa_id": "919900000002"
+  },
+  "messages": [
+    {
+      "timestamp": "2026-10-22T09:25:00+05:30",
+      "sender": "business",
+      "text": "Please send ₹900 advance"
+    },
+    {
+      "timestamp": "2026-10-22T09:40:00+05:30",
+      "sender": "customer",
+      "image": "samples/payment_500.png"
+    },
+    {
+      "timestamp": "2026-10-22T09:41:00+05:30",
+      "sender": "customer",
+      "text": "sent!"
+    }
+  ],
+  "expected": [
+    {
+      "label": "payment attachment of 500, not verified",
+      "type": "attachment",
+      "kind": "payment_screenshot",
+      "count": 1,
+      "amount": 500,
+      "marked_received": false
+    },
+    {
+      "label": "payment_mismatch flag (500 vs 900)",
+      "type": "flag_exists",
+      "flag_type": "payment_mismatch"
+    },
+    {
+      "label": "balance is 1300",
+      "type": "balance",
+      "equals": 1300
+    },
+    {
+      "label": "status is needs_review",
+      "type": "status",
+      "equals": "needs_review"
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "id": "s3",
+  "name": "Edited message",
+  "customer": {
+    "name": "Farah",
+    "wa_id": "919900000003"
+  },
+  "messages": [
+    {
+      "timestamp": "2026-10-21T14:00:00+05:30",
+      "sender": "customer",
+      "text": "Hi, 2 kg butterscotch cake for office farewell, Friday 30th, delivery 4 pm"
+    },
+    {
+      "timestamp": "2026-10-21T14:03:00+05:30",
+      "sender": "customer",
+      "event": "edit",
+      "target": 1,
+      "text": "Hi, 1.5 kg butterscotch cake for office farewell, Friday 30th, delivery 4 pm"
+    }
+  ],
+  "expected": [
+    {
+      "label": "exactly one order exists",
+      "type": "order_count",
+      "equals": 1
+    },
+    {
+      "label": "size is 1.5 kg",
+      "type": "field",
+      "field": "size_or_weight",
+      "equals": "1.5 kg"
+    },
+    {
+      "label": "an update note about the edit exists",
+      "type": "note",
+      "contains": "edited"
+    },
+    {
+      "label": "missing_field flag for price_agreed",
+      "type": "flag_exists",
+      "flag_type": "missing_field",
+      "field": "price_agreed"
+    },
+    {
+      "label": "missing_field flag for address",
+      "type": "flag_exists",
+      "flag_type": "missing_field",
+      "field": "address"
+    },
+    {
+      "label": "status is needs_review",
+      "type": "status",
+      "equals": "needs_review"
+    }
+  ]
+}

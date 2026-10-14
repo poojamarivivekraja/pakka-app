@@ -1,0 +1,130 @@
+{
+  "id": "s4",
+  "name": "Two orders from one customer",
+  "customer": {
+    "name": "Sneha",
+    "wa_id": "919900000004"
+  },
+  "messages": [
+    {
+      "timestamp": "2026-10-22T11:00:00+05:30",
+      "sender": "customer",
+      "text": "Hi! Birthday cake for my daughter on 29th, 1 kg vanilla with pink frosting"
+    },
+    {
+      "timestamp": "2026-10-22T11:10:00+05:30",
+      "sender": "business",
+      "text": "Sure, ₹1200. Pickup or delivery?"
+    },
+    {
+      "timestamp": "2026-10-22T11:12:00+05:30",
+      "sender": "customer",
+      "text": "Pickup, around 6"
+    },
+    {
+      "timestamp": "2026-10-22T11:30:00+05:30",
+      "sender": "customer",
+      "text": "Also, separate order: 12 cupcakes for my office on 2nd Nov, assorted flavours"
+    },
+    {
+      "timestamp": "2026-10-22T11:45:00+05:30",
+      "sender": "business",
+      "text": "Cupcakes are ₹60 each, so ₹720"
+    },
+    {
+      "timestamp": "2026-10-23T09:00:00+05:30",
+      "sender": "customer",
+      "text": "For the cupcakes can you add \"Team Alpha\" toppers?"
+    }
+  ],
+  "expected": [
+    {
+      "label": "two orders",
+      "type": "order_count",
+      "equals": 2
+    },
+    {
+      "label": "birthday order: due 29 Oct",
+      "type": "field",
+      "order": {
+        "due_date": "2026-10-29"
+      },
+      "field": "due_date",
+      "equals": "2026-10-29"
+    },
+    {
+      "label": "birthday order: due time 6 pm",
+      "type": "field",
+      "order": {
+        "due_date": "2026-10-29"
+      },
+      "field": "due_time",
+      "time": "18:00"
+    },
+    {
+      "label": "birthday order: pickup",
+      "type": "field",
+      "order": {
+        "due_date": "2026-10-29"
+      },
+      "field": "fulfilment",
+      "equals": "pickup"
+    },
+    {
+      "label": "birthday order: price 1200",
+      "type": "field",
+      "order": {
+        "due_date": "2026-10-29"
+      },
+      "field": "price_agreed",
+      "money": 1200
+    },
+    {
+      "label": "birthday order is ready",
+      "type": "status",
+      "order": {
+        "due_date": "2026-10-29"
+      },
+      "equals": "ready"
+    },
+    {
+      "label": "cupcake order: price 720",
+      "type": "field",
+      "order": {
+        "due_date": "2026-11-02"
+      },
+      "field": "price_agreed",
+      "money": 720
+    },
+    {
+      "label": "cupcake order: 'Team Alpha' in design_notes or personalisation",
+      "type": "any_field",
+      "order": {
+        "due_date": "2026-11-02"
+      },
+      "fields": [
+        "design_notes",
+        "personalisation"
+      ],
+      "contains": "Team Alpha"
+    },
+    {
+      "label": "cupcake order: missing_field flag for due_time",
+      "type": "flag_exists",
+      "order": {
+        "due_date": "2026-11-02"
+      },
+      "flag_type": "missing_field",
+      "field": "due_time"
+    },
+    {
+      "label": "cupcake order: missing_field flag for fulfilment",
+      "type": "flag_exists",
+      "order": {
+        "due_date": "2026-11-02"
+      },
+      "flag_type": "missing_field",
+      "field": "fulfilment"
+    }
+  ]
+}

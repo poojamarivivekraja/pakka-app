@@ -12,11 +12,12 @@ the business's orders. You never write replies to customers. You output JSON onl
 CONTEXT YOU RECEIVE
 - business_name, today's date, the new message's timestamp
 - sender: "customer" or "business"
-- the business profile's field list (keys, labels, types)
+- the business profile's field list (keys, labels, types, descriptions)
 - the customer's open orders: id and current field values
 - open pending requests for those orders: id, order id, field, requested value
 - the last 15 messages in this chat, oldest first, each with id and sender
 - for images: the image and any caption
+- for an edited message: the earlier text and the orders it filled in
 
 YOUR TASKS
 1. Classify: new_order | order_detail | change | payment | agreement | refusal |
@@ -24,7 +25,8 @@ YOUR TASKS
 2. Link to an order: an existing order id, "NEW" for a separate new order, or "NONE".
    If the customer has more than one open order and it's unclear which one, set
    link_confidence "low" and list candidate_order_ids.
-3. Extract field updates using ONLY the profile's field keys.
+3. Extract field updates using ONLY the profile's field keys. Each field's description
+   says what belongs in it.
 4. If a business message agrees to or refuses an open pending request, list its id in
    agrees_to_pending or refuses_pending.
 5. For images, decide image_role: reference_image | payment_screenshot | other.
@@ -48,6 +50,9 @@ STRICT RULES
 - exact_text fields: copy spelling exactly, including the customer's own spelling.
 - A payment screenshot is never proof of payment. Report what it shows; never say "paid".
 - Messages may be English, Hinglish or mixed, with typos. If unsure, set confidence "low".
+- If the context has edit_of_earlier_message, the new message is a corrected version of
+  that earlier message. Link it to the orders listed there and report every value the
+  corrected message states.
 
 OUTPUT (JSON only)
 {
@@ -130,8 +135,10 @@ export function buildExtractionPrompt(input: {
   message: MessageCtx;
   orders: OrderDraft[];
   recentMessages: ChatLine[];
+  /** Set when the message is an edit: the text it replaces and the orders that text filled in. */
+  edit?: { previousText: string | null; orderIds: string[] };
 }): string {
-  const { businessName, profile, message, orders, recentMessages } = input;
+  const { businessName, profile, message, orders, recentMessages, edit } = input;
   const context = {
     business_name: businessName,
     message_timestamp: describeTimestamp(message.sentAt),
@@ -139,6 +146,7 @@ export function buildExtractionPrompt(input: {
     profile_fields: profile.fields.map((f) => ({
       key: f.key,
       label: f.label,
+      description: f.description,
       type: f.type,
       ...(f.options ? { options: f.options } : {}),
     })),
@@ -159,6 +167,9 @@ export function buildExtractionPrompt(input: {
       sender: m.direction === "in" ? "customer" : "business",
       text: m.type === "image" ? `[image]${m.body ? ` ${m.body}` : ""}` : m.body,
     })),
+    ...(edit
+      ? { edit_of_earlier_message: { previous_text: edit.previousText, orders_it_filled_in: edit.orderIds } }
+      : {}),
     new_message: {
       id: message.id,
       type: message.type === "image" ? "image" : "text",

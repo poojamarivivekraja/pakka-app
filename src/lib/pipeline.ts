@@ -8,9 +8,9 @@ import {
 } from "./pipeline/extraction-prompt";
 import { loadImage } from "./pipeline/media";
 import { applyEditedMessage, applyExtraction, finaliseChanged } from "./pipeline/rules-apply";
-import { flagRevokedMessage, flagUnreadableMessage } from "./pipeline/rules-events";
+import { flagRevokedMessage, flagUnreadableMessage, ordersUsingMessage } from "./pipeline/rules-events";
 import {
-  insertMessage, loadMessage, loadRecentMessages, loadSettings, loadWorkspace,
+  businessRepliedAfter, insertMessage, loadMessage, loadRecentMessages, loadSettings, loadWorkspace,
   saveWorkspace, setMessageStatus,
 } from "./pipeline/store";
 
@@ -55,12 +55,15 @@ function summarise(ws: Workspace, messageId: string, result: ModelResult | null)
 }
 
 /** Steps 1-3 of one message: ask the model, run the rules, save. `source` is the message the details are credited to. */
-async function extract(ws: Workspace, source: Message, ctx: MessageCtx, llmMessageId: string, businessName: string) {
+async function extract(
+  ws: Workspace, source: Message, ctx: MessageCtx, llmMessageId: string, businessName: string,
+  edit?: { previousText: string | null; orderIds: string[] },
+) {
   const recent = await loadRecentMessages(ws.customerId, source.sent_at, source.id);
   const image = ctx.type === "image" && source.media_path ? await loadImage(source.media_path) : undefined;
   const llm = await callLlm({
     system: EXTRACTION_SYSTEM_PROMPT,
-    prompt: buildExtractionPrompt({ businessName, profile: ws.profile, message: ctx, orders: ws.orders, recentMessages: recent }),
+    prompt: buildExtractionPrompt({ businessName, profile: ws.profile, message: ctx, orders: ws.orders, recentMessages: recent, edit }),
     image,
     messageId: llmMessageId,
   });
@@ -91,8 +94,13 @@ export async function processMessage(input: ProcessInput): Promise<ProcessOutput
       if (original.customer_id !== input.customerId) throw new Error("Edited message belongs to another customer");
       const ctx = toCtx(original, input.body ?? "");
       ctx.type = "text";
-      result = await extract(ws, original, ctx, message.id, settings.business_name);
-      applyEditedMessage(ws, result, ctx);
+      const edit = {
+        previousText: original.body,
+        orderIds: ordersUsingMessage(ws, original.id).map((d) => d.order.id),
+      };
+      result = await extract(ws, original, ctx, message.id, settings.business_name, edit);
+      const replied = await businessRepliedAfter(input.customerId, original.sent_at);
+      applyEditedMessage(ws, result, ctx, { businessRepliedSince: replied });
       await setMessageStatus(original.id, "edited", input.body ?? "");
     } else if (message.type === "revoke") {
       const target = await loadMessage(input.targetMessageId ?? "");
