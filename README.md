@@ -3,8 +3,10 @@
 Pakka is an order copilot for small businesses that take custom orders on WhatsApp Business: home bakers, jewellery makers, saree sellers, cloud kitchens' direct orders. It reads the order conversations and keeps one live order ticket per order, with every detail linked to the message it came from, a history of changes, and flags only for the things that genuinely need the owner. It never sends messages to customers. The prototype is demoed with a home bakery; business profiles make it generic.
 
 ## Quick start for reviewers
-- Live app: [live link]
-- Design: [Figma link] · Opportunity map: [FigJam link] · PRD: [PRD link]
+- Live app: https://pakka-app.vercel.app/
+- Design: https://www.figma.com/design/3QEBLyRLp0qeIizbC4MX8O/Capstone_BYOP_Pooja_Pakka?node-id=0-1&t=zbBd2Dwg4WMZV1Mi-1
+- Opportunity-Mapping - Figjam - https://www.figma.com/board/66DAEYQ63KeV5oMLsGJe5n/CapstoneBYOP_Pooja_AI-Opportunity-Map?node-id=0-1&t=6oXBFGiin4Vd6sBE-1
+- PRD: 
 - The Orders screen shows a seeded demo: a home bakery with seven synthetic scenarios.
 - Try it: open /simulator, enter the demo passcode (it's in the submission notes), choose S2 "Change agreed in chat", and press "Send next message" repeatedly. A customer's request waits as pending until the business agrees, and then becomes "Updated from chat". Open Rahul's order to see sources, payments and history.
 - Without the passcode the app is read-only.
