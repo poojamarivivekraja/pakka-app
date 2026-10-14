@@ -1,0 +1,24 @@
+/* The single place for every colour in the app. */
+@theme {
+  --color-background: #faf8f5;
+  --color-surface: #ffffff;
+  --color-border: #e9e4dd;
+  --color-ink: #26221e;
+  --color-muted: #6f675f;
+  --color-dateblock: #f3efe9;
+
+  /* Primary: wordmark, "Next up", one primary button per screen, links, focus only. */
+  --color-primary: #b5562e;
+
+  /* Status pills: soft background + dark text. */
+  --color-confirmed-bg: #e7f1ea;
+  --color-confirmed-fg: #2e6b47;
+  --color-updated-bg: #e9eff7;
+  --color-updated-fg: #33598a;
+  --color-review-bg: #fbefd9;
+  --color-review-fg: #8a5a0b;
+  --color-ready-bg: #f1eeea;
+  --color-ready-fg: #5e5750;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}

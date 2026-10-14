@@ -32,8 +32,15 @@ verification.
   a passcode screen), so strangers can't use the AI quota.
 
 Environment variables: GEMINI_API_KEY, LLM_PROVIDER, LLM_MODEL, NEXT_PUBLIC_SUPABASE_URL,
-SUPABASE_SERVICE_ROLE_KEY, DEMO_PASSCODE. Later for live mode: WHATSAPP_TOKEN,
+SUPABASE_SERVICE_ROLE_KEY, DEMO_PASSCODE, DEMO_TODAY (optional, see "Demo date" below).
+Later for live mode: WHATSAPP_TOKEN,
 WHATSAPP_PHONE_NUMBER_ID, WHATSAPP_VERIFY_TOKEN, WHATSAPP_APP_SECRET.
+
+Demo date: the app's notion of "today" comes from DEMO_TODAY (ISO date, currently
+2026-10-26), falling back to the real date if it is not set. Week grouping, "due this
+week", "Next up" and the header date all use it. Orders due before today go in an
+"Earlier" group. The model is NOT affected: it still resolves relative dates against each
+message's own timestamp.
 
 ## 3. Business profiles
 
@@ -51,6 +58,8 @@ Universal fields (every profile):
 - address (text, required if delivery or courier)
 - tracking_number (text, optional)
 - price_agreed (money, required)
+- advance_requested (money, optional): the advance the business asks for. Filled only
+  when the business states an advance amount.
 
 Bakery adds: size_or_weight (required), flavour (required), dietary, design_notes,
 personalisation (exact_text, label "Message on cake").
@@ -63,6 +72,9 @@ Each value stored in `orders.fields` looks like:
   "updated_at": "...", "previous_value": "... or null", "edited_by_owner": false }
 
 ## 4. Database (already created)
+
+The exact SQL applied to Supabase is in `docs/SCHEMA.sql`. Use its column names.
+`orders.updated_after_confirmation` is a boolean column.
 
 Tables: settings, customers, messages, orders, order_events (history), update_notes,
 pending_requests, flags, attachments, llm_calls.
@@ -114,6 +126,8 @@ STRICT RULES
 - If two incompatible values appear with no clear change (e.g. customer says "you said
   1600 na" after the business said 1800), do NOT pick one; return a conflict.
 - Money: copy numbers exactly as written. Never calculate totals, balances or discounts.
+- Times: for pickup or delivery times written without am or pm, hours 1 to 8 mean pm.
+  Approximate wording such as "around 6" or "6ish" is still confidence "high".
 - Dates: resolve relative dates against the message timestamp, output ISO format, keep
   the original words in "quote", and set confidence "low" if ambiguous.
 - exact_text fields: copy spelling exactly, including the customer's own spelling.
@@ -158,7 +172,7 @@ OUTPUT (JSON only)
 7. Low-confidence updates: apply, but also add a low_confidence flag so the owner checks.
 8. Payment screenshot: create an attachment (kind payment_screenshot, extracted
    amount/reference/payee/date, marked_received false). If the business asked for a
-   specific advance and the amount differs, create a payment_mismatch flag. An
+   specific advance (fields.advance_requested) and the amount differs, create a payment_mismatch flag. An
    unverified payment is NOT a flag; it shows in the Payments section with a
    "Mark as received" button.
 9. Reference image: create an attachment with the description.
@@ -297,4 +311,43 @@ Screens:
    the WhatsApp connection card ("Pakka only reads your business chats to keep orders up
    to date. It never sends messages to your customers.").
 6. Mock notification: when processing creates a new Needs review item, show an in-app
-   toast like
+   toast like "Rahul's order needs review".
+
+Copy rules: say "Needs review", never "Needs you". Say "Agreed in chat by your
+business", never "You agreed". Never show "paid"; use "Screenshot received · not
+verified" until the owner marks it received. Label calculated numbers as calculated.
+
+## 9. Simulator (`/simulator`, passcode-protected, not part of the product UI)
+
+Scenario picker; WhatsApp-style chat panel; "Send next message" (sends one scripted
+message through processMessage and shows it); "Reset scenario"; a free-text box to send
+a custom customer or business message; a side panel showing the affected order's fields,
+flags, update notes and pending requests after each message.
+
+## 10. Scripts
+
+- `npm run scenario -- s1`: clears that scenario's customer data, runs every message
+  through processMessage with a 5-second delay between messages, prints the resulting
+  orders, flags, notes and pending requests, and PASS/FAIL per expected check.
+- `npm run eval`: runs all scenarios in order (s1, s7, s2, s6, s3, s4, s5) and writes
+  docs/EVAL_RESULTS.md with pass/fail per check, tokens per message and per order,
+  average and p95 latency, and estimated cost using editable price constants.
+
+## 11. Live WhatsApp mode (build last, only if time allows)
+
+`/api/webhook`: GET handles Meta's verification (hub.mode, hub.verify_token,
+hub.challenge). POST verifies the X-Hub-Signature-256 header with WHATSAPP_APP_SECRET,
+deduplicates by WhatsApp message id, saves the message, returns 200 immediately, then
+processes it in the background with waitUntil. Handles text, image (download via the
+Graph API into the media bucket), edit, revoke and unsupported (error 131060) messages.
+Note: a test number has no WhatsApp Business app, so business replies don't arrive as
+echoes; the simulator covers both sides.
+
+## 12. Build rules
+
+- Build one step at a time and stop after each so it can be tested.
+- Use only the synthetic data above.
+- Never put keys in code or commit .env.local.
+- When a test fails, fix the root cause in the prompt or the code; never special-case a
+  scenario.
+- Keep it simple: this is a prototype.
