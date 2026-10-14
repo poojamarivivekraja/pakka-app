@@ -12,14 +12,10 @@ export const metadata: Metadata = {
   description: "AI order copilot for WhatsApp custom orders",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
-      <body className="min-h-full">
-        <div className="mx-auto flex min-h-screen w-full max-w-[420px] flex-col bg-background">
-          {children}
-        </div>
-      </body>
+      <body className="min-h-full">{children}</body>
     </html>
   );
 }

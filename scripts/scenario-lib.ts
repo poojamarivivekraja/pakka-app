@@ -3,85 +3,18 @@ import "./load-env";
 // expected checks, print a readable summary.
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import type { Attachment, Flag, Order, OrderEvent, PendingRequest, UpdateNote } from "@/types/db";
 import type { Profile } from "@/types/profile";
 import { missingRequiredFields } from "@/config/profiles";
-import { getSupabase } from "@/lib/supabase";
+import { loadSnapshot, type OrderSnap, type Snapshot } from "@/lib/snapshot";
 import { computeBalance } from "@/lib/pipeline/rules-order";
 import { formatRupees, normaliseText, parseMoney } from "@/lib/pipeline/helpers";
 
-export type ScenarioMessage = {
-  timestamp: string;
-  sender: "customer" | "business";
-  text?: string;
-  image?: string;
-  event?: "edit" | "revoke";
-  /** 1-based number of the message an edit or revoke refers to. */
-  target?: number;
-};
-
-// One expected check. `after` = run it right after that (1-based) message; default: after the last.
-export type Check = {
-  label: string;
-  type: string;
-  after?: number;
-  order?: number | Record<string, string>;
-  [key: string]: unknown;
-};
-
-export type Scenario = {
-  id: string;
-  name: string;
-  continues?: string;
-  customer: { name: string; wa_id: string };
-  messages: ScenarioMessage[];
-  expected: Check[];
-};
+import type { Check, Scenario, ScenarioMessage } from "@/lib/scenarios";
+export type { Check, Scenario, ScenarioMessage };
 
 export async function loadScenario(id: string): Promise<Scenario> {
   const file = path.join(process.cwd(), "src", "data", "scenarios", `${id}.json`);
   return JSON.parse(await readFile(file, "utf8")) as Scenario;
-}
-
-export type OrderSnap = {
-  order: Order;
-  flags: Flag[];
-  pending: PendingRequest[];
-  notes: UpdateNote[];
-  events: OrderEvent[];
-  attachments: Attachment[];
-};
-
-export type Snapshot = { orders: OrderSnap[]; customerFlags: Flag[] };
-
-function rows<T>(res: { data: unknown; error: { message: string } | null }, what: string): T[] {
-  if (res.error) throw new Error(`${what}: ${res.error.message}`);
-  return (res.data ?? []) as T[];
-}
-
-export async function loadSnapshot(customerId: string): Promise<Snapshot> {
-  const db = getSupabase();
-  const orders = rows<Order>(await db.from("orders").select("*").eq("customer_id", customerId).order("created_at"), "orders");
-  const ids = orders.map((o) => o.id);
-  const none = ids.length === 0;
-  const [flags, pending, notes, events, attachments] = await Promise.all([
-    db.from("flags").select("*").eq("customer_id", customerId).order("created_at").then((r) => rows<Flag>(r, "flags")),
-    none ? [] : db.from("pending_requests").select("*").in("order_id", ids).order("created_at").then((r) => rows<PendingRequest>(r, "pending")),
-    none ? [] : db.from("update_notes").select("*").in("order_id", ids).order("created_at").then((r) => rows<UpdateNote>(r, "notes")),
-    none ? [] : db.from("order_events").select("*").in("order_id", ids).order("created_at").then((r) => rows<OrderEvent>(r, "events")),
-    none ? [] : db.from("attachments").select("*").in("order_id", ids).order("created_at").then((r) => rows<Attachment>(r, "attachments")),
-  ]);
-  return {
-    orders: orders.map((order) => ({
-      order,
-      flags: flags.filter((f) => f.order_id === order.id),
-      pending: pending.filter((p) => p.order_id === order.id),
-      notes: notes.filter((n) => n.order_id === order.id),
-      events: events.filter((e) => e.order_id === order.id),
-      attachments: attachments.filter((a) => a.order_id === order.id),
-    })),
-    customerFlags: flags.filter((f) => !f.order_id),
-  };
 }
 
 /** A fingerprint of everything an order's checks look at; used by the no_changes check. */
@@ -94,6 +27,9 @@ export function signature(s: Snapshot): string {
     s.customerFlags.length,
   ]);
 }
+
+export { loadSnapshot };
+export type { Snapshot };
 
 export type CheckContext = {
   profile: Profile;
