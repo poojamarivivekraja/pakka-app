@@ -36,11 +36,13 @@ Names only. Put the values in `.env.local` (and in your host's settings when you
 | `DEMO_PASSCODE` | yes | protects the simulator and every route that calls the model |
 | `DEMO_TODAY` | no | `YYYY-MM-DD`; the date the app treats as "today". Unset means the real date |
 | `SCENARIO_DELAY_MS` | no | scripts only: pause between messages (default 5000) |
-| `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_VERIFY_TOKEN`, `WHATSAPP_APP_SECRET` | later | for the live WhatsApp mode, which is not built yet |
+| `WHATSAPP_TOKEN`, `WHATSAPP_VERIFY_TOKEN`, `WHATSAPP_APP_SECRET` | live mode only | the Cloud API access token (to download images), the verify token you choose when registering the webhook, and your Meta app's secret (to check each request's signature). Without the app secret the webhook refuses everything |
+| `WHATSAPP_PHONE_NUMBER_ID` | live mode, recommended | your business number's ID; messages sent to any other number are ignored |
+| `WHATSAPP_GRAPH_VERSION` | no | Graph API version used to download images (default `v23.0`) |
 
 ### Deploying to Vercel
 
-Set the six required variables above, plus `DEMO_TODAY` and `LLM_THINKING` if you want them, for Production and Preview. The simulator's sample images are shipped inside the API functions (`outputFileTracingIncludes` in `next.config.ts`), so nothing else is needed. The `maxDuration` of the message route is 60 seconds.
+Set the six required variables above, plus `DEMO_TODAY` and `LLM_THINKING` if you want them, for Production and Preview. For live WhatsApp mode also set the `WHATSAPP_*` variables. The simulator's sample images are shipped inside the API functions (`outputFileTracingIncludes` in `next.config.ts`), so nothing else is needed. The `maxDuration` of the message route is 60 seconds.
 
 ## Using the simulator
 
@@ -54,6 +56,20 @@ Open `/simulator` (you'll be asked for the passcode once).
 - **Simulate sync paused:** shows the "Sync paused" banner on every screen.
 - Open the Orders screen (`/`) in another tab: new Needs review items pop up as a toast there.
 
+## Live WhatsApp mode (optional)
+
+The simulator is the demo. Live mode lets real WhatsApp messages feed the same pipeline through `/api/webhook`.
+
+1. In your Meta app (WhatsApp, Cloud API), set the webhook callback URL to `https://<your-domain>/api/webhook` and the verify token to your `WHATSAPP_VERIFY_TOKEN`, and subscribe to the `messages` field.
+2. Set the `WHATSAPP_*` variables in Vercel.
+3. Send a message to your business number from another phone.
+
+What it does: it checks Meta's `X-Hub-Signature-256` signature on every request (anything unsigned is refused with 403), answers `200` straight away, then processes the message in the background (Next's `after()`, which uses Vercel's `waitUntil`). A message Meta delivers twice is recorded once. Text goes straight into the pipeline; images are downloaded through the Graph API into the private `media` bucket; messages Pakka can't read (voice notes, stickers, locations, error 131051 or 131060) raise "1 message couldn't be read".
+
+**Try it without Meta:** with the app running, `npm run webhook:test -- --type=text --text="Need a 1 kg mango cake for Saturday"` sends a signed, made-up message to your own app (set any `WHATSAPP_APP_SECRET` in `.env.local` first). Use `--type=unsupported` to try the unreadable-message path without a model call. It creates a synthetic customer named "Webhook Demo".
+
+This route reaches the model but can't carry the demo passcode (Meta calls it), so the request signature is its gate instead. `npm run check` verifies that nothing reaches the model without one or the other.
+
 ## Commands
 
 | Command | What it does |
@@ -63,7 +79,7 @@ Open `/simulator` (you'll be asked for the passcode once).
 | `npm run eval` | Runs all seven scenarios three times (resetting the data before each repeat) and writes [`docs/EVAL_RESULTS.md`](docs/EVAL_RESULTS.md): pass rate per check, tokens, latency and estimated cost. Takes a while because of the pauses |
 | `npm run dev` / `build` / `start` / `lint` | the usual Next.js commands |
 
-`npm run check:passcode` proves the AI routes refuse a request without the passcode (the app must be running). Individual checks can be run on their own, for example `npm run check:pipeline`.
+`npm run check:webhook` tests the webhook (signature, parsing, recording each kind of message) with Meta and the model stubbed. `npm run check:passcode` proves the AI routes refuse a request without the passcode (the app must be running). Individual checks can be run on their own, for example `npm run check:pipeline`.
 
 ## Business profiles
 
@@ -89,9 +105,9 @@ To add one:
 ## Known limitations
 
 - **A WhatsApp test number can't receive the business's own replies.** Without a WhatsApp Business app, the business's messages don't arrive as echoes, so the simulator covers both sides of the conversation.
-- **Unsupported WhatsApp devices.** Messages WhatsApp can't deliver (error 131060) can't be read; Pakka flags "1 message couldn't be read" and asks the owner to check WhatsApp.
+- **Messages WhatsApp doesn't deliver.** Some messages reach the webhook with no content (error 131051 for types the Cloud API doesn't support, 131060 for a customer's first message to a number that also runs the WhatsApp Business app). Pakka flags "1 message couldn't be read" and asks the owner to check WhatsApp. Per Meta's documentation, edited messages are currently delivered as "unsupported" too, so a customer's edit in live mode shows up as an unreadable message rather than as the new text; the edit and delete handling is built for when Meta sends them (deletes are only sent for numbers that also use the WhatsApp Business app). The simulator covers all of these.
 - **Not built:** voice notes, Instagram, group chats, helper accounts, and real push notifications (the toast is in-app only). Aggregator orders (Swiggy, Zomato) are out of scope. Payments are never verified: a screenshot is shown as "not verified" until the owner marks it received.
-- **The live WhatsApp webhook is not built yet.** Only the simulator feeds the pipeline.
+- **The live webhook is built and tested against made-up payloads, but not yet against Meta's real servers.** It follows Meta's published formats; expect to adjust once real traffic arrives. The Graph API version it uses to download images is a default you may need to change. Messages from one customer that arrive at the same moment are processed independently, so two near-simultaneous messages could briefly step on each other.
 - **Free-tier model, synthetic data only.** The prototype is built for a free-tier model and fake conversations. Real customers' chats need a paid tier (free-tier terms can allow the provider to use prompts), your own data-handling review, and the app protected beyond the single demo passcode: only the simulator and the model routes check it today.
 - **The sync-paused banner is a simulation** stored in the browser. It doesn't stop messages being processed.
 - **Switching profile** only affects new orders; an existing order keeps the profile it was created with.

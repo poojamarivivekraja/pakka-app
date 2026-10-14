@@ -31,6 +31,23 @@ export const env = {
     }
     return v;
   },
+  get whatsappToken() {
+    return required("WHATSAPP_TOKEN");
+  },
+  get whatsappAppSecret() {
+    return required("WHATSAPP_APP_SECRET");
+  },
+  get whatsappVerifyToken() {
+    return required("WHATSAPP_VERIFY_TOKEN");
+  },
+  /** Optional: when set, messages sent to any other business number are ignored. */
+  get whatsappPhoneNumberId() {
+    return process.env.WHATSAPP_PHONE_NUMBER_ID || undefined;
+  },
+  /** Optional Graph API version, e.g. "v23.0". */
+  get whatsappGraphVersion() {
+    return process.env.WHATSAPP_GRAPH_VERSION || "v23.0";
+  },
   get demoPasscode() {
     return required("DEMO_PASSCODE");
   },

@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "check:profiles": "tsx scripts/check-profiles.ts",
-    "check": "npm run -s check:secrets && npm run -s check:ai-routes && npm run -s check:profiles && npm run -s check:orders-view && npm run -s check:order-detail && npm run -s check:source-sheet && npm run -s check:chats-view && npm run -s check:pipeline && npm run -s check:pipeline-db && npm run -s check:order-actions && npm run -s check:settings && npm run -s check:llm",
+    "check": "npm run -s check:secrets && npm run -s check:ai-routes && npm run -s check:profiles && npm run -s check:orders-view && npm run -s check:order-detail && npm run -s check:source-sheet && npm run -s check:chats-view && npm run -s check:webhook && npm run -s check:pipeline && npm run -s check:pipeline-db && npm run -s check:order-actions && npm run -s check:settings && npm run -s check:llm",
     "check:llm": "tsx --conditions=react-server scripts/check-llm.ts",
     "check:pipeline": "tsx --conditions=react-server scripts/check-pipeline.ts",
     "check:pipeline-db": "tsx --conditions=react-server scripts/check-pipeline-db.ts",
@@ -22,7 +22,9 @@
     "check:settings": "tsx --conditions=react-server scripts/check-settings.ts",
     "eval": "tsx --conditions=react-server scripts/eval.ts",
     "check:secrets": "tsx --conditions=react-server scripts/check-secrets.ts",
-    "check:ai-routes": "tsx scripts/check-ai-routes.ts"
+    "check:ai-routes": "tsx scripts/check-ai-routes.ts",
+    "check:webhook": "tsx --conditions=react-server scripts/check-webhook.ts",
+    "webhook:test": "tsx --conditions=react-server scripts/send-test-webhook.ts"
   },
   "dependencies": {
     "@google/genai": "^2.29.1",

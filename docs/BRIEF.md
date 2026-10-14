@@ -374,6 +374,15 @@ Graph API into the media bucket), edit, revoke and unsupported (error 131060) me
 Note: a test number has no WhatsApp Business app, so business replies don't arrive as
 echoes; the simulator covers both sides.
 
+Notes from Meta's webhook reference (checked October 2026). The message types are `text`,
+`image` (`image.id`, `image.caption`), `edit` (`edit.original_message_id`, new content under
+`edit.message`), `revoke` (`revoke.original_message_id`) and `unsupported` (`errors[].code` 131051
+or 131060; `unsupported.type` names the original type). Meta currently delivers edited messages
+as `unsupported`, so the new text may never arrive, and `revoke` is only sent for numbers that
+also use the WhatsApp Business app. Reactions and status updates are ignored. Because Meta
+can't send the demo passcode, this route is gated by the request signature instead of the
+passcode, and it refuses everything when WHATSAPP_APP_SECRET is not set.
+
 ## 12. Build rules
 
 - Build one step at a time and stop after each so it can be tested.

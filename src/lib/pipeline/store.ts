@@ -40,14 +40,16 @@ export async function insertMessage(m: NewMessage): Promise<{ message: Message; 
     const existing = check(await db.from("messages").select("*").eq("wa_message_id", m.waMessageId).maybeSingle(), "check duplicate");
     if (existing) return { message: existing as Message, duplicate: true };
   }
-  const row = check(
-    await db.from("messages").insert({
-      wa_message_id: m.waMessageId, customer_id: m.customerId, direction: m.direction, type: m.type,
-      body: m.body, media_path: m.mediaPath, sent_at: m.sentAt, status: "received", raw: m.raw ?? null,
-    }).select("*").single(),
-    "save message",
-  );
-  return { message: row as Message, duplicate: false };
+  const inserted = await db.from("messages").insert({
+    wa_message_id: m.waMessageId, customer_id: m.customerId, direction: m.direction, type: m.type,
+    body: m.body, media_path: m.mediaPath, sent_at: m.sentAt, status: "received", raw: m.raw ?? null,
+  }).select("*").single();
+  if (inserted.error && inserted.error.code === "23505" && m.waMessageId) {
+    // The same WhatsApp message arrived twice at the same moment: the other copy won.
+    const winner = check(await db.from("messages").select("*").eq("wa_message_id", m.waMessageId).single(), "find duplicate");
+    return { message: winner as Message, duplicate: true };
+  }
+  return { message: check(inserted, "save message") as Message, duplicate: false };
 }
 
 export async function loadMessage(id: string): Promise<Message> {

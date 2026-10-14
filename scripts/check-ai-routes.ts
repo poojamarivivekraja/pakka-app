@@ -1,4 +1,5 @@
-// Offline check: every route that can reach the model checks the passcode.
+// Offline check: every route that can reach the model is gated: by the passcode, or (for the
+// WhatsApp webhook, which Meta calls and which can't send a passcode) by Meta's request signature.
 // It follows imports from each route, page and server action under src/app; anything that can
 // reach src/lib/llm.ts must go through the passcode check.
 import { readdirSync, readFileSync, statSync } from "node:fs";
@@ -48,9 +49,15 @@ check("at least one route reaches the model (the check is looking at the right t
 for (const f of aiEntries) {
   const text = readFileSync(f, "utf8");
   const isRoute = /route\.tsx?$/.test(f);
-  const gated = /simulatorRoute|refuseWithoutPasscode/.test(text);
-  check(`${rel(f)} reaches the model and is ${isRoute ? "passcode-gated" : "NOT a page or action (not allowed)"}`, isRoute && gated);
+  const passcode = /simulatorRoute|refuseWithoutPasscode/.test(text);
+  const signature = /receiveWebhook/.test(text) && rel(f) === path.join("app", "api", "webhook", "route.ts");
+  check(`${rel(f)} reaches the model and is ${isRoute ? (signature ? "signature-gated" : "passcode-gated") : "NOT a page or action (not allowed)"}`, isRoute && (passcode || signature));
 }
+const webhook = readFileSync(path.join(ROOT, "lib", "whatsapp", "webhook.ts"), "utf8");
+const receive = webhook.slice(webhook.indexOf("export async function receiveWebhook"));
+check("receiveWebhook() refuses an unsigned request before it parses or processes anything",
+  receive.indexOf("verifySignature(") !== -1 && receive.indexOf("verifySignature(") < receive.indexOf("JSON.parse") && receive.indexOf("JSON.parse") < receive.indexOf("handleEvent"));
+check("receiveWebhook() returns 403 for a bad signature and 503 when no secret is set", /status: 403/.test(receive) && /status: 503/.test(receive));
 // The shared wrapper itself must do the check.
 const wrapper = readFileSync(path.join(ROOT, "lib", "simulator-route.ts"), "utf8");
 check("simulatorRoute() calls refuseWithoutPasscode() before running anything", /refuseWithoutPasscode\(\)[\s\S]*?return refused[\s\S]*?await run\(\)/.test(wrapper));
