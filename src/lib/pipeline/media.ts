@@ -15,7 +15,12 @@ export async function loadImage(mediaPath: string): Promise<LlmImage> {
   if (mediaPath.startsWith("samples/")) {
     const file = path.join(process.cwd(), "public", mediaPath);
     if (!file.startsWith(path.join(process.cwd(), "public"))) throw new Error("Invalid media path");
-    return { mimeType, data: await readFile(file) };
+    try {
+      return { mimeType, data: await readFile(file) };
+    } catch {
+      // On Vercel this means public/samples wasn't shipped with the function (see outputFileTracingIncludes in next.config.ts).
+      throw new Error(`Sample image not found on the server: ${mediaPath}`);
+    }
   }
   const { data, error } = await getSupabase().storage.from("media").download(mediaPath);
   if (error || !data) throw new Error(`Could not download ${mediaPath}: ${error?.message}`);
