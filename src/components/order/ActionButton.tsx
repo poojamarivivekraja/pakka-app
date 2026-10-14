@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { ErrorText } from "@/components/ErrorText";
 import type { ActionResult } from "@/app/(app)/orders/[id]/actions";
 
 type Variant = "link" | "mutedLink" | "ghost" | "primary";
@@ -38,7 +39,7 @@ export function ActionButton({ label, pendingLabel, action, variant = "link", co
       >
         {pending ? (pendingLabel ?? "Working…") : label}
       </button>
-      {error && <span role="alert" className="mt-1 block text-xs text-review-fg">{error}</span>}
+      {error && <ErrorText message={error} className="mt-1 block text-xs text-review-fg" />}
     </span>
   );
 }

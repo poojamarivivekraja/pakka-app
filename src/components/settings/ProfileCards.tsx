@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { chooseProfile } from "@/app/(app)/settings/actions";
+import { ErrorText } from "@/components/ErrorText";
 
 export type ProfileOption = { id: string; name: string; available: boolean };
 
@@ -41,7 +42,7 @@ export function ProfileCards({ options, activeId }: { options: ProfileOption[]; 
           </button>
         );
       })}
-      {error && <p role="alert" className="text-xs text-review-fg">{error}</p>}
+      {error && <ErrorText message={error} className="text-xs text-review-fg" />}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import "./load-env";
 // Needs the app running (npm run dev). Usage: npm run check:passcode [-- --base=http://localhost:3000]
-// Confirms the AI routes refuse requests without the passcode cookie. No model call is made.
+// Confirms every route that changes data refuses requests without the passcode cookie, and that the
+// read-only pages still load without it. No model call is made.
 import { PASSCODE_COOKIE, passcodeIsCorrect, passcodeToken, safeNext } from "@/lib/passcode";
 
 const base = process.argv.find((a) => a.startsWith("--base="))?.split("=")[1] ?? "http://localhost:3000";
@@ -18,7 +19,7 @@ async function main() {
   check("a wrong passcode is rejected", !passcodeIsCorrect("definitely-wrong") && !passcodeIsCorrect(""));
   check("the redirect target must be a same-site path", safeNext("https://evil.example") === "/simulator" && safeNext("//evil.example") === "/simulator" && safeNext("/simulator") === "/simulator");
   try {
-    await fetch(`${base}/api/health`);
+    await fetch(`${base}/passcode`);
   } catch {
     console.error(`Can't reach ${base}. Start the app first with: npm run dev`);
     process.exit(1);
@@ -51,6 +52,25 @@ async function main() {
   check("/simulator with the right cookie loads (200)", r.status === 200, String(r.status));
   r = await fetch(`${base}/passcode`);
   check("/passcode page is reachable without a cookie", r.status === 200, String(r.status));
+
+  // The webhook changes data too, but Meta calls it, so it is gated by the request signature instead.
+  r = await fetch(`${base}/api/webhook`, { method: "POST", headers: json, body: "{}" });
+  check("webhook refuses an unsigned post (403, or 503 when no app secret is set)", r.status === 403 || r.status === 503, String(r.status));
+
+  // Without the passcode the app is a read-only view: these all still load.
+  for (const p of ["/", "/chats", "/settings"]) {
+    r = await fetch(`${base}${p}`, { redirect: "manual" });
+    check(`read-only page ${p} loads without a cookie (200)`, r.status === 200, String(r.status));
+  }
+  const orderLink = (await (await fetch(`${base}/`)).text()).match(/href="(\/orders\/[0-9a-f-]{36})"/)?.[1];
+  if (orderLink) {
+    r = await fetch(`${base}${orderLink}`, { redirect: "manual" });
+    check("an order page loads without a cookie (200)", r.status === 200, String(r.status));
+  } else {
+    console.log("SKIP  no orders yet, so no order page to open (run npm run seed:demo)");
+  }
+  r = await fetch(`${base}/api/health`);
+  check("/api/health no longer exists", r.status === 404, String(r.status));
 
   process.exit(failed ? 1 : 0);
 }

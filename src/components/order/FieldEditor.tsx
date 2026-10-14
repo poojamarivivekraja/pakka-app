@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { ErrorText } from "@/components/ErrorText";
 import { saveField } from "@/app/(app)/orders/[id]/actions";
 import type { FieldType } from "@/types/profile";
 
@@ -42,7 +43,7 @@ export function FieldEditor({ orderId, field, onDone }: { orderId: string; field
           placeholder={field.type === "money" ? "Amount in ₹" : `Enter the ${field.shortLabel}`}
         />
       )}
-      {error && <p role="alert" className="text-xs text-review-fg">{error}</p>}
+      {error && <ErrorText message={error} className="text-xs text-review-fg" />}
       <div className="flex items-center gap-4">
         <button type="submit" disabled={pending || !value.trim()} className="min-h-11 rounded-lg bg-ink px-4 py-2 text-sm font-semibold text-surface disabled:opacity-40">
           {pending ? "Saving…" : "Save"}

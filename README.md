@@ -2,6 +2,13 @@
 
 Pakka is an order copilot for small businesses that take custom orders on WhatsApp Business: home bakers, jewellery makers, saree sellers, cloud kitchens' direct orders. It reads the order conversations and keeps one live order ticket per order, with every detail linked to the message it came from, a history of changes, and flags only for the things that genuinely need the owner. It never sends messages to customers. The prototype is demoed with a home bakery; business profiles make it generic.
 
+## Quick start for reviewers
+- Live app: [live link]
+- Design: [Figma link] · Opportunity map: [FigJam link] · PRD: [PRD link]
+- The Orders screen shows a seeded demo: a home bakery with seven synthetic scenarios.
+- Try it: open /simulator, enter the demo passcode (it's in the submission notes), choose S2 "Change agreed in chat", and press "Send next message" repeatedly. A customer's request waits as pending until the business agrees, and then becomes "Updated from chat". Open Rahul's order to see sources, payments and history.
+- Without the passcode the app is read-only.
+
 > Everything here uses **synthetic data only**. Don't connect real customer chats to a prototype running on a free-tier model.
 
 ## How it works
@@ -18,8 +25,8 @@ You need Node.js 20.9 or newer and a Supabase project.
 1. In Supabase, run `docs/SCHEMA.sql` in the SQL editor to create the tables.
 2. `npm install`
 3. Copy `.env.example` to `.env.local` and fill in the values (see below). Never commit `.env.local`.
-4. `npm run dev`, then open <http://localhost:3000/api/health>. It should show your business settings and today's date. If it shows an error, the Supabase URL or key is wrong.
-5. Open <http://localhost:3000/simulator>, enter your passcode, and send a scripted conversation.
+4. `npm run dev`, then open <http://localhost:3000/simulator>, enter your passcode, and send a scripted conversation. If the Orders screen shows an error instead, the Supabase URL or key in `.env.local` is wrong.
+5. To restore the demo story at any time, run `npm run seed:demo`. It clears the scenario data and replays s1, s7, s2, s6, s3, s4 and s5 (a few minutes, it calls the model).
 
 ## Environment variables
 

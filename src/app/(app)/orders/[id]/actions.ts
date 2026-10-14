@@ -2,6 +2,7 @@
 
 import { refresh } from "next/cache";
 import { z } from "zod";
+import { refuseActionWithoutPasscode } from "@/lib/passcode";
 import {
   ActionError, chooseConflictValue, chooseOrderForMessage, clearUpdatedAfterConfirmation, closeOrder,
   confirmOrder, editField, markFlagChecked, markNoteSeen, markPaymentReceived,
@@ -10,12 +11,14 @@ import {
 // Thin wrappers the page calls. Each returns { error } for a problem the owner can understand,
 // or {} on success, and refreshes the page.
 
-export type ActionResult = { error?: string };
+export type ActionResult = { error?: string; status?: number };
 
 const id = z.string().uuid();
 const text = z.string().max(600);
 
 async function run(fn: () => Promise<void>, { refreshPage = true } = {}): Promise<ActionResult> {
+  const refused = await refuseActionWithoutPasscode();
+  if (refused) return refused;
   try {
     await fn();
   } catch (err) {

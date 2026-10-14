@@ -64,4 +64,38 @@ check("simulatorRoute() calls refuseWithoutPasscode() before running anything", 
 const passcode = readFileSync(path.join(ROOT, "lib", "passcode.ts"), "utf8");
 check("the check returns 401 without a valid cookie", /status:\s*401/.test(passcode));
 
+
+// ---- Every way to change data is passcode-gated (or signature-gated for Meta's webhook) ----
+const appFiles = files.filter((f) => f.startsWith(path.join(ROOT, "app")));
+const routes = appFiles.filter((f) => /route\.tsx?$/.test(f));
+const KNOWN_READ_ONLY = [path.join("app", "api", "notifications", "route.ts")];
+for (const f of routes) {
+  const text = readFileSync(f, "utf8");
+  const writes = /export\s+(async\s+)?function\s+(POST|PUT|PATCH|DELETE)|export\s+const\s+(POST|PUT|PATCH|DELETE)/.test(text);
+  const gated = /simulatorRoute|refuseWithoutPasscode|receiveWebhook/.test(text);
+  if (writes) check(`${rel(f)} accepts writes and is gated`, gated);
+  else check(`${rel(f)} has no write method and is on the read-only list`, KNOWN_READ_ONLY.includes(rel(f)) || gated, "a new GET route? add it to KNOWN_READ_ONLY only if it changes nothing");
+}
+// Server actions: every exported action must do the passcode check before anything else.
+for (const f of appFiles.filter((x) => /actions\.tsx?$/.test(x))) {
+  const text = readFileSync(f, "utf8");
+  if (!/^["']use server["']/m.test(text)) continue;
+  if (rel(f) === path.join("app", "passcode", "actions.ts")) continue; // the login itself: it writes nothing
+  check(`${rel(f)} imports the passcode check`, /refuseActionWithoutPasscode/.test(text));
+  const exported = [...text.matchAll(/export\s+(?:async\s+function\s+(\w+)[^{]*\{([\s\S]*?)\n\}|const\s+(\w+)\s*=\s*async[^\n]*\n?[^\n]*)/g)];
+  for (const m of exported) {
+    const name = m[1] ?? m[3];
+    const body = m[0];
+    const gated = /refuseActionWithoutPasscode\(\)|\brun\(/.test(body);
+    check(`${rel(f)}: ${name}() is gated`, gated);
+  }
+  if (/const run\s*=|function run\(/.test(text) || /async function run\(/.test(text)) {
+    const run = text.slice(text.indexOf("async function run("));
+    check(`${rel(f)}: run() checks the passcode before it does anything`, run.indexOf("refuseActionWithoutPasscode()") !== -1 && run.indexOf("refuseActionWithoutPasscode()") < run.indexOf("await fn()"));
+  }
+}
+const pc = readFileSync(path.join(ROOT, "lib", "passcode.ts"), "utf8");
+check("refuseActionWithoutPasscode() returns 401 without a valid cookie", /refuseActionWithoutPasscode[\s\S]*status: 401/.test(pc));
+check("/api/health is gone", !files.some((f) => f.includes(path.join("api", "health"))));
+
 process.exit(failed ? 1 : 0);

@@ -12,6 +12,7 @@
     "check:llm": "tsx --conditions=react-server scripts/check-llm.ts",
     "check:pipeline": "tsx --conditions=react-server scripts/check-pipeline.ts",
     "check:pipeline-db": "tsx --conditions=react-server scripts/check-pipeline-db.ts",
+    "seed:demo": "tsx --conditions=react-server scripts/seed-demo.ts",
     "scenario": "tsx --conditions=react-server scripts/run-scenario.ts",
     "check:passcode": "tsx --conditions=react-server scripts/check-passcode.ts",
     "check:orders-view": "tsx --conditions=react-server scripts/check-orders-view.ts",

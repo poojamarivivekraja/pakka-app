@@ -2,6 +2,7 @@ import "server-only";
 import { cookies } from "next/headers";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { env } from "./env";
+import { PASSCODE_MESSAGE } from "./passcode-message";
 
 // DEMO_PASSCODE gate. After a correct entry a cookie holds a hash derived from the
 // passcode (never the passcode itself). Every page and route that reaches the AI checks it.
@@ -35,4 +36,10 @@ export async function refuseWithoutPasscode(): Promise<Response | null> {
 /** Only same-site paths are allowed as a post-login destination. */
 export function safeNext(next: string | null | undefined): string {
   return next && next.startsWith("/") && !next.startsWith("//") ? next : "/simulator";
+}
+
+/** For server actions: the same check as refuseWithoutPasscode(), as a result the page can show. Null when allowed. */
+export async function refuseActionWithoutPasscode(): Promise<{ error: string; status: 401 } | null> {
+  if (await hasPasscode()) return null;
+  return { error: PASSCODE_MESSAGE, status: 401 };
 }
