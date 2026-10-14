@@ -26,7 +26,7 @@ export function ProfileCards({ options, activeId }: { options: ProfileOption[]; 
               setError(null);
               start(async () => setError((await chooseProfile(o.id)).error ?? null));
             }}
-            className={`flex items-center justify-between gap-3 rounded-2xl bg-surface px-4 py-3.5 text-left ${
+            className={`flex min-h-11 items-center justify-between gap-3 rounded-2xl bg-surface px-4 py-3.5 text-left ${
               selected ? "border-2 border-ink" : "border border-border"
             } ${o.available ? "" : "opacity-60"}`}
           >

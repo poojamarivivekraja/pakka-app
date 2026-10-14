@@ -11,3 +11,34 @@ body {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
+
+/* The app column: the one width every page, sheet, toast and bar shares. */
+:root {
+  --app-width: 420px;
+}
+
+@utility app-column {
+  width: 100%;
+  max-width: var(--app-width);
+  margin-inline: auto;
+}
+
+/* A layer pinned to the window edge whose content sits in the app column. */
+@utility app-column-layer {
+  position: fixed;
+  inset-inline: 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* Room for the iPhone home bar. */
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* At least 44px to tap. */
+@utility tap {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+}

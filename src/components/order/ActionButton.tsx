@@ -6,9 +6,9 @@ import type { ActionResult } from "@/app/(app)/orders/[id]/actions";
 type Variant = "link" | "mutedLink" | "ghost" | "primary";
 
 const STYLES: Record<Variant, string> = {
-  link: "text-sm font-semibold text-primary",
-  mutedLink: "text-sm font-medium text-muted",
-  ghost: "w-full rounded-xl border border-border bg-surface px-4 py-3 text-[15px] font-semibold text-ink",
+  link: "tap text-sm font-semibold text-primary",
+  mutedLink: "tap text-sm font-medium text-muted",
+  ghost: "min-h-11 w-full rounded-xl border border-border bg-surface px-4 py-3 text-[15px] font-semibold text-ink",
   primary: "w-full rounded-xl bg-primary px-4 py-3.5 text-base font-semibold text-surface",
 };
 

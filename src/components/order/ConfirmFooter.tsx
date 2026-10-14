@@ -20,7 +20,7 @@ export function ConfirmFooter({ model }: { model: OrderDetailModel }) {
       )}
       <p className="text-center text-xs text-muted">Built from synced messages; check the chat if something looks missing.</p>
       {!closed && (
-        <div className="flex justify-center gap-6 pb-2">
+        <div className="flex justify-center gap-6 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
           {status !== "confirmed" && (
             <ActionButton variant="mutedLink" label="Mark as delivered" action={() => markDelivered(model.id)} confirmText="Mark this order as delivered?" />
           )}

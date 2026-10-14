@@ -57,11 +57,11 @@ export function SourceSheet({ source, whatsappUrl, onClose }: { source: SourceMo
           <div className="mt-5 flex flex-col gap-2">
             <a
               href={whatsappUrl} target="_blank" rel="noopener noreferrer"
-              className="block w-full rounded-xl bg-primary px-4 py-3.5 text-center text-base font-semibold text-surface"
+              className="block min-h-11 w-full rounded-xl bg-primary px-4 py-3.5 text-center text-base font-semibold text-surface"
             >
               Open in WhatsApp
             </a>
-            <button type="button" onClick={onClose} className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-[15px] font-semibold text-ink">
+            <button type="button" onClick={onClose} className="min-h-11 w-full rounded-xl border border-border bg-surface px-4 py-3 text-[15px] font-semibold text-ink">
               Close
             </button>
           </div>

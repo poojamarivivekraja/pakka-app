@@ -15,7 +15,7 @@ type Props = {
 
 function Item({ item, model, onViewSource, onViewImage }: Props & { item: ReviewItem }) {
   const [editing, setEditing] = useState(false);
-  const link = "text-sm font-semibold text-primary";
+  const link = "tap text-sm font-semibold text-primary";
   const openWhatsApp = (label: string) => (
     <a href={model.whatsappUrl} target="_blank" rel="noopener noreferrer" className={link}>{label}</a>
   );

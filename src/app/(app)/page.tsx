@@ -47,7 +47,7 @@ async function OrdersContent({ searchParams }: { searchParams: Promise<{ filter?
               key={f.key}
               href={f.key === "all" ? "/" : `/?filter=${f.key}`}
               aria-current={selected ? "true" : undefined}
-              className={`whitespace-nowrap rounded-full px-3.5 py-2 text-[13px] font-semibold ${
+              className={`tap shrink-0 whitespace-nowrap rounded-full px-4 text-[13px] font-semibold ${
                 selected ? "bg-ink text-surface" : "border border-border bg-surface text-ink"
               }`}
             >

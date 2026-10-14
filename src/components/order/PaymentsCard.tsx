@@ -33,7 +33,7 @@ export function PaymentsCard({ model, onViewImage }: { model: OrderDetailModel; 
             </span>
           </div>
           <div className="mt-1 flex items-center justify-end gap-4">
-            {s.imageUrl && <button type="button" onClick={() => onViewImage(s.imageUrl!)} className="text-[13px] font-semibold text-primary">View screenshot</button>}
+            {s.imageUrl && <button type="button" onClick={() => onViewImage(s.imageUrl!)} className="tap text-[13px] font-semibold text-primary">View screenshot</button>}
             {!s.received && !model.closed && <ActionButton label="Mark as received" action={() => markReceived(model.id, s.id)} />}
           </div>
         </div>

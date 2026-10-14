@@ -25,7 +25,7 @@ export function NotesAndPending({ model }: { model: OrderDetailModel }) {
           <p className="mt-1 text-sm text-muted">
             {p.current ? `The order still says ${p.current} until you reply in WhatsApp.` : "The order has no value for this yet. Reply in WhatsApp to settle it."}
           </p>
-          <a href={model.whatsappUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm font-semibold text-primary">
+          <a href={model.whatsappUrl} target="_blank" rel="noopener noreferrer" className="tap text-sm font-semibold text-primary">
             Reply in WhatsApp
           </a>
         </Card>

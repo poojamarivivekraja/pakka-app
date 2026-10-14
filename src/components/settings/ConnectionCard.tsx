@@ -20,7 +20,7 @@ export function ConnectionCard() {
         onClick={() => {
           if (window.confirm("Disconnect WhatsApp and delete all synced data? In this prototype, nothing will actually be deleted.")) setNote(true);
         }}
-        className="mt-3 text-sm font-semibold text-review-fg"
+        className="tap mt-2 text-left text-sm font-semibold text-review-fg"
       >
         Disconnect and delete synced data
       </button>

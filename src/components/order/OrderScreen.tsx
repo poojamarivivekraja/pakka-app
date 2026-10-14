@@ -29,7 +29,7 @@ export function OrderScreen({ model }: { model: OrderDetailModel }) {
   return (
     <>
       <header className="px-5 pt-5">
-        <Link href="/" className="text-[15px] font-semibold text-primary">‹ Orders</Link>
+        <Link href="/" className="tap text-[15px] font-semibold text-primary">‹ Orders</Link>
         <div className="mt-4 flex gap-4">
           <div className="flex h-[72px] w-[72px] shrink-0 flex-col items-center justify-center rounded-2xl bg-dateblock">
             {h.day ? (
@@ -70,9 +70,9 @@ export function OrderScreen({ model }: { model: OrderDetailModel }) {
         <p className="mt-0.5 text-sm text-muted">Not verified. Check your own payment records before marking it received.</p>
         {imageUrl && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={imageUrl} alt="Screenshot sent by the customer" className="mx-auto mt-4 max-h-[55vh] rounded-xl border border-border" />
+          <img src={imageUrl} alt="Screenshot sent by the customer" className="mx-auto mt-4 h-auto max-w-full rounded-xl border border-border" />
         )}
-        <button type="button" onClick={closeImage} className="mt-4 w-full rounded-xl border border-border bg-surface px-4 py-3 text-[15px] font-semibold text-ink">
+        <button type="button" onClick={closeImage} className="mt-4 min-h-11 w-full rounded-xl border border-border bg-surface px-4 py-3 text-[15px] font-semibold text-ink">
           Close
         </button>
       </BottomSheet>

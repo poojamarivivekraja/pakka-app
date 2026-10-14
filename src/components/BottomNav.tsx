@@ -17,7 +17,7 @@ export function BottomNav() {
 /** The same bar with nothing marked active: the fallback while the path is being read. */
 export function NavLinks({ pathname }: { pathname: string }) {
   return (
-    <nav aria-label="Main" className="sticky bottom-0 mt-auto flex border-t border-border bg-surface">
+    <nav aria-label="Main" className="pb-safe sticky bottom-0 mt-auto flex border-t border-border bg-surface">
       {ITEMS.map((item) => {
         const active = item.match(pathname);
         return (
@@ -25,7 +25,7 @@ export function NavLinks({ pathname }: { pathname: string }) {
             key={item.href}
             href={item.href}
             aria-current={active ? "page" : undefined}
-            className={`flex-1 py-4 text-center text-sm ${active ? "font-bold text-ink" : "font-medium text-muted"}`}
+            className={`flex min-h-12 flex-1 items-center justify-center py-3 text-center text-sm ${active ? "font-bold text-ink" : "font-medium text-muted"}`}
           >
             {item.label}
           </Link>

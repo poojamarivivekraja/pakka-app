@@ -58,18 +58,20 @@ export function Toaster() {
 
   if (toasts.length === 0) return null;
   return (
-    <div aria-live="polite" role="status" className="pointer-events-none fixed inset-x-0 top-3 z-[60] mx-auto flex w-[min(396px,calc(100vw-24px))] flex-col gap-2">
+    <div aria-live="polite" role="status" className="app-column-layer pointer-events-none top-3 z-[60] px-3">
+      <div className="app-column flex flex-col gap-2">
       {toasts.map((t) => (
         <div key={t.key} className="pointer-events-auto flex items-start justify-between gap-3 rounded-xl border border-border border-l-[5px] border-l-review-fg bg-surface px-4 py-3 shadow-lg">
           <div>
             <p className="text-[15px] font-semibold text-ink">{t.text}</p>
-            <Link href={t.href} onClick={() => dismiss(t.key)} className="mt-0.5 inline-block text-sm font-semibold text-primary">
+            <Link href={t.href} onClick={() => dismiss(t.key)} className="tap text-sm font-semibold text-primary">
               {t.href.startsWith("/orders") ? "View order" : "View chat"}
             </Link>
           </div>
-          <button type="button" aria-label="Dismiss" onClick={() => dismiss(t.key)} className="text-lg leading-none text-muted">×</button>
+          <button type="button" aria-label="Dismiss" onClick={() => dismiss(t.key)} className="tap min-w-11 justify-center text-lg leading-none text-muted">×</button>
         </div>
       ))}
+      </div>
     </div>
   );
 }

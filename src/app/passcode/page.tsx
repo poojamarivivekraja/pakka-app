@@ -4,7 +4,7 @@ import { PasscodeForm } from "./PasscodeForm";
 
 export default function PasscodePage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-[360px] flex-col justify-center gap-6 p-6">
+    <main className="mx-auto flex min-h-dvh w-full max-w-[360px] flex-col justify-center gap-6 p-6">
       <div>
         <h1 className="text-3xl font-bold text-primary">Pakka</h1>
         <p className="mt-2 text-sm text-muted">

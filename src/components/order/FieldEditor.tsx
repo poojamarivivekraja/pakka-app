@@ -14,7 +14,7 @@ export function FieldEditor({ orderId, field, onDone }: { orderId: string; field
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
 
-  const input = "w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-[15px] text-ink";
+  const input = "w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-base text-ink";
   return (
     <form
       className="mt-2 flex flex-col gap-2"
@@ -44,10 +44,10 @@ export function FieldEditor({ orderId, field, onDone }: { orderId: string; field
       )}
       {error && <p role="alert" className="text-xs text-review-fg">{error}</p>}
       <div className="flex items-center gap-4">
-        <button type="submit" disabled={pending || !value.trim()} className="rounded-lg bg-ink px-4 py-2 text-sm font-semibold text-surface disabled:opacity-40">
+        <button type="submit" disabled={pending || !value.trim()} className="min-h-11 rounded-lg bg-ink px-4 py-2 text-sm font-semibold text-surface disabled:opacity-40">
           {pending ? "Saving…" : "Save"}
         </button>
-        <button type="button" onClick={onDone} className="text-sm font-medium text-muted">Cancel</button>
+        <button type="button" onClick={onDone} className="tap text-sm font-medium text-muted">Cancel</button>
       </div>
     </form>
   );

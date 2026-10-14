@@ -11,8 +11,8 @@ function Row({ f, orderId, locked, onViewSource }: { f: FieldRowModel; orderId: 
 
   const links = (
     <div className="flex shrink-0 items-center gap-3 pt-0.5">
-      {f.hasSource && <button type="button" onClick={() => onViewSource(f.key)} className="text-[13px] font-semibold text-primary">Source ↗</button>}
-      {!locked && <button type="button" onClick={() => setEditing((v) => !v)} className="text-[13px] font-medium text-muted">{editing ? "Close" : "Edit"}</button>}
+      {f.hasSource && <button type="button" onClick={() => onViewSource(f.key)} className="tap text-[13px] font-semibold text-primary">Source ↗</button>}
+      {!locked && <button type="button" onClick={() => setEditing((v) => !v)} className="tap text-[13px] font-medium text-muted">{editing ? "Close" : "Edit"}</button>}
     </div>
   );
   const pills = (

@@ -25,7 +25,7 @@ async function Chat({ params }: { params: Promise<{ id: string }> }) {
   return (
     <>
       <header className="px-5 pt-5">
-        <Link href="/chats" className="text-[15px] font-semibold text-primary">‹ Chats</Link>
+        <Link href="/chats" className="tap text-[15px] font-semibold text-primary">‹ Chats</Link>
         <div className="mt-4 flex items-center gap-3">
           <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-dateblock text-[15px] font-semibold text-ink">
             {initialOf(customer.name)}
@@ -40,7 +40,7 @@ async function Chat({ params }: { params: Promise<{ id: string }> }) {
         <ChatThread entries={buildChat(chat.messages)} imageUrls={chat.imageUrls} />
       </div>
       <div className="mx-5 mt-4 text-center">
-        <a href={`https://wa.me/${customer.waId}`} target="_blank" rel="noopener noreferrer" className="text-[15px] font-semibold text-primary">
+        <a href={`https://wa.me/${customer.waId}`} target="_blank" rel="noopener noreferrer" className="tap text-[15px] font-semibold text-primary">
           Reply in WhatsApp
         </a>
         <p className="mt-1 text-xs text-muted">Pakka never sends messages to your customers.</p>

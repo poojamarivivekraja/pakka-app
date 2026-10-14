@@ -12,7 +12,7 @@ export function SyncBanner() {
       <StatusPill tone="review" label="Sync paused" />
       <p className="mt-2 text-[15px] font-semibold text-ink">WhatsApp disconnected</p>
       <p className="mt-0.5 text-sm text-muted">Orders may be out of date. Reconnect to keep them up to date.</p>
-      <button type="button" onClick={() => setPaused(false)} className="mt-2 text-sm font-semibold text-primary">Reconnect</button>
+      <button type="button" onClick={() => setPaused(false)} className="tap mt-1 text-sm font-semibold text-primary">Reconnect</button>
     </div>
   );
 }

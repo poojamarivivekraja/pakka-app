@@ -94,7 +94,7 @@ export function SimulatorClient({ scenarios }: { scenarios: ScenarioOption[] }) 
             <select
               id="scenario" value={scenarioId} disabled={!!busy}
               onChange={(e) => setScenarioId(e.target.value)}
-              className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-ink"
+              className="min-h-11 rounded-lg border border-border bg-surface px-3 py-2 text-base text-ink"
             >
               {scenarios.map((sc) => (
                 <option key={sc.id} value={sc.id}>{sc.id.toUpperCase()} · {sc.name}</option>
@@ -110,7 +110,7 @@ export function SimulatorClient({ scenarios }: { scenarios: ScenarioOption[] }) 
               <button
                 onClick={() => run("Sending", () => call("/api/simulator/send", { scenario: scenarioId }))}
                 disabled={!canSendNext}
-                className="flex-1 rounded-lg bg-primary px-3 py-2.5 text-sm font-semibold text-surface disabled:opacity-40"
+                className="min-h-11 flex-1 rounded-lg bg-primary px-3 py-2.5 text-sm font-semibold text-surface disabled:opacity-40"
               >
                 {busy === "Sending" ? "Sending…" : "Send next message"}
               </button>
@@ -122,7 +122,7 @@ export function SimulatorClient({ scenarios }: { scenarios: ScenarioOption[] }) 
                   if (confirm(warn)) run("Resetting", () => call("/api/simulator/reset", { scenario: scenarioId }));
                 }}
                 disabled={!!busy || loading}
-                className="rounded-lg border border-border bg-surface px-3 py-2.5 text-sm font-semibold text-ink disabled:opacity-40"
+                className="min-h-11 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm font-semibold text-ink disabled:opacity-40"
               >
                 Reset scenario
               </button>
@@ -162,7 +162,7 @@ export function SimulatorClient({ scenarios }: { scenarios: ScenarioOption[] }) 
               {(["customer", "business"] as const).map((who) => (
                 <button
                   type="button" key={who} onClick={() => setSender(who)}
-                  className={`rounded-full px-3 py-1 font-semibold ${sender === who ? "bg-ink text-surface" : "border border-border bg-surface text-ink"}`}
+                  className={`min-h-11 rounded-full px-3 py-1 font-semibold ${sender === who ? "bg-ink text-surface" : "border border-border bg-surface text-ink"}`}
                 >
                   {who === "customer" ? "Customer" : "Business"}
                 </button>
@@ -172,11 +172,11 @@ export function SimulatorClient({ scenarios }: { scenarios: ScenarioOption[] }) 
               <input
                 value={text} onChange={(e) => setText(e.target.value)} maxLength={1000}
                 placeholder={sender === "customer" ? "Type what the customer says…" : "Type what the business replies…"}
-                className="min-w-0 flex-1 rounded-lg border border-border bg-surface px-3 py-2 text-sm text-ink"
+                className="min-h-11 min-w-0 flex-1 rounded-lg border border-border bg-surface px-3 py-2 text-base text-ink"
               />
               <button
                 type="submit" disabled={!!busy || loading || !text.trim()}
-                className="rounded-lg bg-ink px-4 py-2 text-sm font-semibold text-surface disabled:opacity-40"
+                className="min-h-11 rounded-lg bg-ink px-4 py-2 text-sm font-semibold text-surface disabled:opacity-40"
               >
                 Send
               </button>
