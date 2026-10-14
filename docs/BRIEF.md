@@ -49,7 +49,8 @@ Config files in `src/config/profiles/`: `bakery.json` and `saree.json`. Each fie
 field, with examples that differ from the test scenarios; sent to the model with every
 message, for every field alike), `type` (text | exact_text | measurement | money | date |
 time | enum | items) and `required` (true/false; address is required only when fulfilment
-is delivery or courier). Times are stored as 24-hour HH:MM. items_summary's description
+is delivery or courier). Each field also has a `short_label` (lower-case, for sentences such
+as "Add the price and the address to confirm."). Times are stored as 24-hour HH:MM. items_summary's description
 says it is a one-line summary of what was ordered, in the message's own words, filled as
 soon as any message says what is ordered (even when the same message also gives size or
 flavour), and never adding a product word that isn't in the chat. occasion's description
@@ -75,7 +76,8 @@ fall_and_pico, personalisation (exact_text, label "Embroidery").
 
 Each value stored in `orders.fields` looks like:
 { "value": "...", "source_message_id": "...", "confidence": "high|low",
-  "updated_at": "...", "previous_value": "... or null", "edited_by_owner": false }
+  "updated_at": "...", "previous_value": "... or null", "edited_by_owner": false,
+  "quote": "the exact words that support the value, or null" }
 
 ## 4. Database (already created)
 
@@ -170,7 +172,8 @@ OUTPUT (JSON only)
    (case-insensitive, whitespace-normalised). If not, drop the update and add a
    low_confidence flag.
 2. order_ref "NEW": create an order with the active profile. Low link_confidence: create a
-   which_order flag with candidate ids in `data`; apply nothing until the owner picks.
+   which_order flag with candidate ids and the model's quote-checked result in `data`; apply
+   nothing until the owner picks, then apply that stored result to the chosen order.
 3. Field update where the field is EMPTY: apply it (store value, source, confidence).
 4. Field update where the field already has a DIFFERENT value:
    - agreed_by_business true: apply it, keep previous_value, write order_events

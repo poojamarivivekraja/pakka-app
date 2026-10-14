@@ -75,3 +75,15 @@ export function timeSortKey(value: string | undefined | null): number {
   if (m[3] === "pm") hour += 12;
   return hour * 60 + Number(m[2]);
 }
+
+/** "5 pm" / "5:30pm" / "17:00" -> "17:00" (24-hour, as stored). Returns null if it isn't a time. */
+export function normaliseTime24(value: string | undefined | null): string | null {
+  const m = value?.trim().toLowerCase().match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)?$/);
+  if (!m) return null;
+  let hour = Number(m[1]);
+  const minute = m[2] ?? "00";
+  if (hour > 23 || Number(minute) > 59) return null;
+  if (m[3] === "pm" && hour < 12) hour += 12;
+  if (m[3] === "am" && hour === 12) hour = 0;
+  return `${String(hour).padStart(2, "0")}:${minute}`;
+}

@@ -11,10 +11,10 @@ const TONE: Record<PillTone, { label: string; classes: string }> = {
 
 export const pillLabel = (tone: PillTone) => TONE[tone].label;
 
-export function StatusPill({ tone }: { tone: PillTone }) {
+export function StatusPill({ tone, label }: { tone: PillTone; label?: string }) {
   return (
     <span className={`inline-block whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-semibold leading-none ${TONE[tone].classes}`}>
-      {TONE[tone].label}
+      {label ?? TONE[tone].label}
     </span>
   );
 }

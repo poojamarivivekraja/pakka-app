@@ -105,7 +105,8 @@ export async function saveWorkspace(ws: Workspace) {
     const o = d.order;
     check(
       await db.from("orders").update({
-        fields: o.fields, status: o.status, updated_after_confirmation: o.updated_after_confirmation, updated_at: o.updated_at,
+        fields: o.fields, status: o.status, updated_after_confirmation: o.updated_after_confirmation,
+        updated_at: o.updated_at, confirmed_at: o.confirmed_at,
       }).eq("id", o.id),
       "update order",
     );

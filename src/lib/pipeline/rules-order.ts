@@ -36,7 +36,12 @@ export function linkToOrder(
       type: "which_order",
       detail: "Which order is this message about?",
       messageId: message.id,
-      data: { candidate_order_ids: candidates, field_updates: keptUpdates, message_id: message.id },
+      data: {
+        candidate_order_ids: candidates,
+        message_id: message.id,
+        // Everything the model found (quote-checked updates only), so choosing an order can apply it all.
+        result: { ...result, field_updates: keptUpdates },
+      },
     });
     return { draft: null, ambiguous: true };
   }

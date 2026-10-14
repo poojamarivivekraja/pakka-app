@@ -5,6 +5,7 @@
     {
       "key": "occasion",
       "label": "Occasion",
+      "short_label": "occasion",
       "description": "The event or reason the order is for, in a word or two. Never the product itself. Examples: baby shower, Diwali gifting, housewarming.",
       "type": "text",
       "required": false
@@ -12,6 +13,7 @@
     {
       "key": "items_summary",
       "label": "Items",
+      "short_label": "items",
       "description": "A one-line summary of what was ordered, in the message's own words. Fill it as soon as any message says what is ordered, even when the same message also gives size or flavour (repeat them here). Never add a product word that is not in the chat. Examples: a box of 12 brownies, a dozen donuts, 2 sarees.",
       "type": "text",
       "required": true
@@ -19,6 +21,7 @@
     {
       "key": "due_date",
       "label": "Due date",
+      "short_label": "date",
       "description": "The day the customer needs the order, as an ISO date (YYYY-MM-DD). Resolve words like \"next Tuesday\" against the message date.",
       "type": "date",
       "required": true
@@ -26,6 +29,7 @@
     {
       "key": "due_time",
       "label": "Time",
+      "short_label": "time",
       "description": "The time of day for pickup or delivery, as 24-hour HH:MM. Examples: 11 am is 11:00, 3 pm is 15:00.",
       "type": "time",
       "required": true
@@ -33,6 +37,7 @@
     {
       "key": "fulfilment",
       "label": "Fulfilment",
+      "short_label": "fulfilment",
       "description": "How the customer gets the order: pickup (they collect it), delivery (the business delivers it) or courier (sent through a courier service).",
       "type": "enum",
       "required": true,
@@ -45,6 +50,7 @@
     {
       "key": "address",
       "label": "Address",
+      "short_label": "address",
       "description": "Where the order is delivered or couriered. Only needed for delivery or courier. Example: Flat 4B, Lotus Residency, Koramangala.",
       "type": "text",
       "required": false,
@@ -59,6 +65,7 @@
     {
       "key": "tracking_number",
       "label": "Tracking number",
+      "short_label": "tracking number",
       "description": "The courier's tracking or consignment number, once the order has been shipped.",
       "type": "text",
       "required": false
@@ -66,6 +73,7 @@
     {
       "key": "price_agreed",
       "label": "Price agreed",
+      "short_label": "price",
       "description": "The total price the business and customer agreed for the whole order, copied as written. Example: ₹2500.",
       "type": "money",
       "required": true
@@ -73,6 +81,7 @@
     {
       "key": "advance_requested",
       "label": "Advance requested",
+      "short_label": "advance",
       "description": "The advance amount the business asks the customer to pay, copied as the business wrote it. Fill it only when the business states an amount. Example: ₹1000.",
       "type": "money",
       "required": false
@@ -80,6 +89,7 @@
     {
       "key": "fabric",
       "label": "Fabric",
+      "short_label": "fabric",
       "description": "The fabric or material. Examples: Kanjivaram silk, cotton, georgette.",
       "type": "text",
       "required": false
@@ -87,6 +97,7 @@
     {
       "key": "colour",
       "label": "Colour",
+      "short_label": "colour",
       "description": "The colour or colour combination wanted. Example: peacock blue with a silver border.",
       "type": "text",
       "required": false
@@ -94,6 +105,7 @@
     {
       "key": "quantity",
       "label": "Quantity",
+      "short_label": "quantity",
       "description": "How many pieces were ordered. Example: 3.",
       "type": "text",
       "required": true
@@ -101,6 +113,7 @@
     {
       "key": "blouse_measurements",
       "label": "Blouse measurements",
+      "short_label": "blouse measurements",
       "description": "Blouse measurements the customer gives, copied as written. Example: bust 36, waist 32, length 15.",
       "type": "measurement",
       "required": false
@@ -108,6 +121,7 @@
     {
       "key": "fall_and_pico",
       "label": "Fall and pico",
+      "short_label": "fall and pico",
       "description": "Whether the saree needs fall and pico stitching, with any detail. Example: fall and pico needed.",
       "type": "text",
       "required": false
@@ -115,6 +129,7 @@
     {
       "key": "personalisation",
       "label": "Embroidery",
+      "short_label": "embroidery",
       "description": "The exact name or words to be embroidered, copied letter for letter, including the customer's own spelling. Example: Meenakshi & Suresh.",
       "type": "exact_text",
       "required": false

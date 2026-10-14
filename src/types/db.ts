@@ -26,6 +26,8 @@ export type FieldValue = {
   updated_at: string;
   previous_value: string | null;
   edited_by_owner: boolean;
+  /** The customer's or business's exact words that support the value (for the Source sheet). */
+  quote?: string | null;
 };
 
 export type OrderFields = Record<string, FieldValue>;

@@ -29,6 +29,7 @@ for (const [id, p] of Object.entries(PROFILES)) {
   check(`${id}: all types valid`, p.fields.every((f) => types.includes(f.type)));
   check(`${id}: enum fields have options`, p.fields.every((f) => f.type !== "enum" || f.options?.length));
   check(`${id}: every field has a description`, p.fields.every((f) => typeof f.description === "string" && f.description.trim().length > 10));
+  check(`${id}: every field has a short_label`, p.fields.every((f) => typeof f.short_label === "string" && f.short_label.length > 1));
   const adv = p.fields.find((f) => f.key === "advance_requested");
   check(`${id}: advance_requested is optional money`, adv?.type === "money" && adv.required === false);
 }

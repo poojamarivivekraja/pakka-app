@@ -11,6 +11,8 @@ export type FieldType =
 export type ProfileField = {
   key: string;
   label: string;
+  /** Lower-case name for sentences, e.g. "Add the price and the address to confirm." */
+  short_label: string;
   /** Short plain-language meaning of the field. Sent to the model with every message. */
   description: string;
   type: FieldType;

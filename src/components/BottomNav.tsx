@@ -9,8 +9,13 @@ const ITEMS = [
   { href: "/settings", label: "Settings", match: (p: string) => p.startsWith("/settings") },
 ];
 
+/** Reads the current path, so it must sit inside <Suspense> (see the app layout). */
 export function BottomNav() {
-  const pathname = usePathname();
+  return <NavLinks pathname={usePathname()} />;
+}
+
+/** The same bar with nothing marked active: the fallback while the path is being read. */
+export function NavLinks({ pathname }: { pathname: string }) {
   return (
     <nav aria-label="Main" className="sticky bottom-0 mt-auto flex border-t border-border bg-surface">
       {ITEMS.map((item) => {

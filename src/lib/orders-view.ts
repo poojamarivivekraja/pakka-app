@@ -58,7 +58,7 @@ export type OrdersView = {
 
 const value = (row: OrderRow, key: string) => row.fields[key]?.value?.trim() || undefined;
 
-export function pillTone(row: OrderRow): PillTone {
+export function pillTone(row: Pick<OrderRow, "status" | "updatedAfterConfirmation" | "unseenNotes">): PillTone {
   if (row.status === "needs_review") return "review";
   if (row.status === "confirmed") return row.updatedAfterConfirmation ? "updated" : "confirmed";
   return row.unseenNotes > 0 ? "updated" : "ready";

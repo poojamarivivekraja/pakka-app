@@ -43,7 +43,7 @@ export function flagDroppedUpdates(
   }
 }
 
-function pushEvent(draft: OrderDraft, e: Pick<OrderEvent, "field" | "old_value" | "new_value" | "actor" | "note" | "source_message_id">) {
+export function pushEvent(draft: OrderDraft, e: Pick<OrderEvent, "field" | "old_value" | "new_value" | "actor" | "note" | "source_message_id">) {
   draft.newEvents.push({ id: newId(), order_id: draft.order.id, created_at: nowIso(), ...e });
 }
 
@@ -58,11 +58,11 @@ function pushNote(draft: OrderDraft, text: string, sourceMessageId: string | nul
 /** Rule 3: store the value, its source message and confidence. */
 export function fillEmptyField(
   draft: OrderDraft, key: string, value: string, sourceMessageId: string | null,
-  confidence: Confidence, sentAt: string, eventSourceId = sourceMessageId,
+  confidence: Confidence, sentAt: string, eventSourceId = sourceMessageId, quote: string | null = null,
 ) {
   draft.order.fields[key] = {
     value, source_message_id: sourceMessageId, confidence,
-    updated_at: sentAt, previous_value: null, edited_by_owner: false,
+    updated_at: sentAt, previous_value: null, edited_by_owner: false, quote,
   };
   pushEvent(draft, { field: key, old_value: null, new_value: value, actor: "chat", note: null, source_message_id: eventSourceId });
 }
@@ -70,12 +70,12 @@ export function fillEmptyField(
 /** Replace an existing value, keeping the old one as previous_value and writing history. */
 export function replaceFieldValue(
   draft: OrderDraft, key: string, value: string, sourceMessageId: string | null,
-  confidence: Confidence, sentAt: string, eventSourceId = sourceMessageId,
+  confidence: Confidence, sentAt: string, eventSourceId = sourceMessageId, quote: string | null = null,
 ) {
   const old = draft.order.fields[key].value;
   draft.order.fields[key] = {
     value, source_message_id: sourceMessageId, confidence,
-    updated_at: sentAt, previous_value: old, edited_by_owner: false,
+    updated_at: sentAt, previous_value: old, edited_by_owner: false, quote,
   };
   pushEvent(draft, { field: key, old_value: old, new_value: value, actor: "chat", note: null, source_message_id: eventSourceId });
 }
@@ -83,9 +83,9 @@ export function replaceFieldValue(
 /** Rule 4 (agreed): apply, keep previous_value, write the event, add the update note. Rule 14: flag confirmed orders. */
 export function applyAgreedChange(
   draft: OrderDraft, profile: Profile, key: string, value: string,
-  sourceMessageId: string | null, confidence: Confidence, agreement: MessageCtx,
+  sourceMessageId: string | null, confidence: Confidence, agreement: MessageCtx, quote: string | null = null,
 ) {
-  replaceFieldValue(draft, key, value, sourceMessageId, confidence, agreement.sentAt, agreement.id);
+  replaceFieldValue(draft, key, value, sourceMessageId, confidence, agreement.sentAt, agreement.id, quote);
   pushNote(
     draft,
     `${labelOf(profile, key)} is now ${value}. Agreed in chat by your business on ${formatChatTime(agreement.sentAt)}.`,
@@ -148,15 +148,15 @@ export function applyFieldUpdates(
     let applied = false;
 
     if (!existing || !existing.value) {
-      fillEmptyField(draft, u.field, value, message.id, u.confidence, message.sentAt);
+      fillEmptyField(draft, u.field, value, message.id, u.confidence, message.sentAt, message.id, u.quote);
       applied = true;
     } else if (normaliseText(existing.value) === normaliseText(value)) {
       continue;
     } else if (opts.replaceSourceMessageId && existing.source_message_id === opts.replaceSourceMessageId) {
-      replaceFieldValue(draft, u.field, value, message.id, u.confidence, message.sentAt);
+      replaceFieldValue(draft, u.field, value, message.id, u.confidence, message.sentAt, message.id, u.quote);
       applied = true;
     } else if (u.agreed_by_business) {
-      applyAgreedChange(draft, ws.profile, u.field, value, message.id, u.confidence, message);
+      applyAgreedChange(draft, ws.profile, u.field, value, message.id, u.confidence, message, u.quote);
       applied = true;
     } else {
       queuePendingRequest(draft, u.field, value, message);

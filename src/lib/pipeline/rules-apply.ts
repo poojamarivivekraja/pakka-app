@@ -17,17 +17,23 @@ export function applyExtraction(
   const link = linkToOrder(ws, result, message, kept);
   flagDroppedUpdates(ws, link.draft, dropped, message);
 
-  if (!link.ambiguous) {
-    if (link.draft) applyFieldUpdates(ws, link.draft, kept, message, opts);
-    applyAgreedPending(ws, result.agrees_to_pending, message);
-    applyRefusedPending(ws, result.refuses_pending, message);
-    raiseConflicts(ws, link.draft, result.conflicts, message);
-    recordPaymentScreenshot(ws, link.draft, result, message);
-    recordReferenceImage(ws, link.draft, result, message);
-  }
+  if (!link.ambiguous) applyToOrder(ws, link.draft, result, kept, message, opts);
 
   finaliseChanged(ws, message.id);
   return { draft: link.draft };
+}
+
+/** Rules 3-9 for an order that has been decided: updates, pending decisions, conflicts, images. */
+export function applyToOrder(
+  ws: Workspace, draft: OrderDraft | null, result: ModelResult, keptUpdates: ModelResult["field_updates"],
+  message: MessageCtx, opts: ApplyOptions = {},
+) {
+  if (draft) applyFieldUpdates(ws, draft, keptUpdates, message, opts);
+  applyAgreedPending(ws, result.agrees_to_pending, message);
+  applyRefusedPending(ws, result.refuses_pending, message);
+  raiseConflicts(ws, draft, result.conflicts, message);
+  recordPaymentScreenshot(ws, draft, result, message);
+  recordReferenceImage(ws, draft, result, message);
 }
 
 /** Rules 11 and 13 for every order this message touched. */
