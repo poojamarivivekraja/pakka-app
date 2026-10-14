@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "check:profiles": "tsx scripts/check-profiles.ts",
-    "check": "npm run -s check:profiles && npm run -s check:orders-view && npm run -s check:order-detail && npm run -s check:source-sheet && npm run -s check:pipeline && npm run -s check:pipeline-db && npm run -s check:order-actions && npm run -s check:llm",
+    "check": "npm run -s check:profiles && npm run -s check:orders-view && npm run -s check:order-detail && npm run -s check:source-sheet && npm run -s check:chats-view && npm run -s check:pipeline && npm run -s check:pipeline-db && npm run -s check:order-actions && npm run -s check:settings && npm run -s check:llm",
     "check:llm": "tsx --conditions=react-server scripts/check-llm.ts",
     "check:pipeline": "tsx --conditions=react-server scripts/check-pipeline.ts",
     "check:pipeline-db": "tsx --conditions=react-server scripts/check-pipeline-db.ts",
@@ -17,7 +17,9 @@
     "check:orders-view": "tsx --conditions=react-server scripts/check-orders-view.ts",
     "check:order-actions": "tsx --conditions=react-server scripts/check-order-actions.ts",
     "check:order-detail": "tsx --conditions=react-server scripts/check-order-detail.ts",
-    "check:source-sheet": "tsx scripts/check-source-sheet.tsx"
+    "check:source-sheet": "tsx scripts/check-source-sheet.tsx",
+    "check:chats-view": "tsx --conditions=react-server scripts/check-chats-view.ts",
+    "check:settings": "tsx --conditions=react-server scripts/check-settings.ts"
   },
   "dependencies": {
     "@google/genai": "^2.29.1",

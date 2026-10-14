@@ -2,18 +2,12 @@ import "server-only";
 import type { Attachment, Customer, Flag, Message, Order, OrderEvent, PendingRequest, UpdateNote } from "@/types/db";
 import { getProfile } from "@/config/profiles";
 import { getSupabase } from "@/lib/supabase";
+import { mediaUrl } from "@/lib/media-url";
 import { buildOrderDetail, type OrderDetailModel } from "@/lib/order-detail-model";
 
 function rows<T>(res: { data: unknown; error: { message: string } | null }, what: string): T[] {
   if (res.error) throw new Error(`${what}: ${res.error.message}`);
   return (res.data ?? []) as T[];
-}
-
-/** An address the browser can show: sample images from /public, private storage via a short-lived signed URL. */
-async function imageUrl(mediaPath: string): Promise<string | null> {
-  if (mediaPath.startsWith("samples/")) return `/${mediaPath}`;
-  const { data } = await getSupabase().storage.from("media").createSignedUrl(mediaPath, 3600);
-  return data?.signedUrl ?? null;
 }
 
 /** Everything the order page shows, or null when the order doesn't exist. */
@@ -49,7 +43,7 @@ export async function loadOrderDetail(orderId: string): Promise<OrderDetailModel
   const imageUrls: Record<string, string> = {};
   await Promise.all(
     messages.filter((m) => m.type === "image" && m.media_path).map(async (m) => {
-      const url = await imageUrl(m.media_path!);
+      const url = await mediaUrl(m.media_path!);
       if (url) imageUrls[m.id] = url;
     }),
   );

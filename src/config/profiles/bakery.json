@@ -1,6 +1,7 @@
 {
   "id": "bakery",
   "name": "Home bakery",
+  "tracks_for": "a home bakery",
   "fields": [
     {
       "key": "occasion",

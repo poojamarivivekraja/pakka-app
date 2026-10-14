@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { OrderCard } from "@/components/OrderCard";
+import { SyncStatus } from "@/components/SyncStatus";
 import { getToday } from "@/lib/demo-date";
 import { formatToday } from "@/lib/dates";
 import { loadOrderRows } from "@/lib/orders-data";
@@ -11,7 +12,7 @@ export default function OrdersPage({ searchParams }: { searchParams: Promise<{ f
     <>
       <header className="flex items-center justify-between px-5 pt-5">
         <span className="text-[22px] font-bold text-primary">Pakka</span>
-        <span className="text-xs font-semibold text-confirmed-fg">● Synced just now</span>
+        <SyncStatus />
       </header>
       <Suspense fallback={<p className="px-5 pt-6 text-sm text-muted">Loading orders…</p>}>
         <OrdersContent searchParams={searchParams} />

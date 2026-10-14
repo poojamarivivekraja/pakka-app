@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { StatusPill, type PillTone } from "@/components/StatusPill";
+import { SyncBanner } from "@/components/SyncBanner";
+import { useSyncPaused } from "@/lib/sync-store";
 import { formatChatStamp, formatRupees } from "@/lib/format";
 import type { SimBubble, SimOrder, SimState } from "@/lib/simulator-types";
 
@@ -33,6 +35,7 @@ export function SimulatorClient({ scenarios }: { scenarios: ScenarioOption[] }) 
   const [text, setText] = useState("");
   const chatEnd = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const [syncPaused, setSyncPaused] = useSyncPaused();
   const loading = !state || state.scenario.id !== scenarioId;
 
   const run = useCallback(async (label: string, fn: () => Promise<SimState>) => {
@@ -40,6 +43,7 @@ export function SimulatorClient({ scenarios }: { scenarios: ScenarioOption[] }) 
     setError(null);
     try {
       setState(await fn());
+      window.dispatchEvent(new Event("pakka:poll")); // let the toast check for new Needs review items now
     } catch (e) {
       if (e instanceof PasscodeRequired) {
         router.push("/passcode?next=/simulator");
@@ -79,6 +83,8 @@ export function SimulatorClient({ scenarios }: { scenarios: ScenarioOption[] }) 
         <h1 className="text-2xl font-bold text-primary">Pakka <span className="text-base font-semibold text-ink">simulator</span></h1>
         <p className="text-xs text-muted">Test tool, not part of the product. Messages go through the same pipeline as live WhatsApp.</p>
       </header>
+
+      <SyncBanner />
 
       <div className="grid gap-4 md:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
         {/* Left: controls and chat */}
@@ -121,6 +127,16 @@ export function SimulatorClient({ scenarios }: { scenarios: ScenarioOption[] }) 
                 Reset scenario
               </button>
             </div>
+            <label className="flex cursor-pointer items-center justify-between gap-3 border-t border-border pt-3 text-sm text-ink">
+              <span>
+                <span className="font-semibold">Simulate sync paused</span>
+                <span className="block text-xs text-muted">Shows the “Sync paused” banner on every screen.</span>
+              </span>
+              <input
+                type="checkbox" role="switch" checked={syncPaused} onChange={(e) => setSyncPaused(e.target.checked)}
+                className="h-5 w-5 accent-[var(--color-ink)]"
+              />
+            </label>
             {error && <p role="alert" className="rounded-lg bg-review-bg px-3 py-2 text-xs text-review-fg">{error}</p>}
           </div>
 

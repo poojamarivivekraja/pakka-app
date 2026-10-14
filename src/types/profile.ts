@@ -26,5 +26,7 @@ export type ProfileField = {
 export type Profile = {
   id: string;
   name: string;
+  /** Completes "What Pakka tracks for ..." in Settings, e.g. "a home bakery". */
+  tracks_for: string;
   fields: ProfileField[];
 };

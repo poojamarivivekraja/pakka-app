@@ -49,7 +49,7 @@ Config files in `src/config/profiles/`: `bakery.json` and `saree.json`. Each fie
 field, with examples that differ from the test scenarios; sent to the model with every
 message, for every field alike), `type` (text | exact_text | measurement | money | date |
 time | enum | items) and `required` (true/false; address is required only when fulfilment
-is delivery or courier). Each field also has a `short_label` (lower-case, for sentences such
+is delivery or courier). Each profile has a `tracks_for` phrase. Each field also has a `short_label` (lower-case, for sentences such
 as "Add the price and the address to confirm."). Times are stored as 24-hour HH:MM. items_summary's description
 says it is a one-line summary of what was ordered, in the message's own words, filled as
 soon as any message says what is ordered (even when the same message also gives size or
@@ -326,11 +326,23 @@ Screens:
 5. Your business (`/settings`): profile options (Home bakery, Sarees and clothing,
    Jewellery, Food orders on WhatsApp) with the note "Orders from Swiggy, Zomato and
    other apps aren't covered. Pakka tracks orders you take directly on WhatsApp."; the
-   tracked fields for the active profile with neutral "Required" / "Optional" labels;
+   tracked fields for the active profile ("What Pakka tracks for <the profile's
+   `tracks_for`>", e.g. "a home bakery") with a neutral grey "Required" chip (never green)
+   or plain "Optional" text; Jewellery and Food orders on WhatsApp are shown muted with a
+   "Coming soon" pill and can't be chosen; switching profile changes
+   `settings.active_profile`, which applies to new orders;
    the WhatsApp connection card ("Pakka only reads your business chats to keep orders up
    to date. It never sends messages to your customers.").
 6. Mock notification: when processing creates a new Needs review item, show an in-app
-   toast like "Rahul's order needs review".
+   toast like "Rahul's order needs review" with a link to the order. It appears on any
+   screen (including the simulator) because every screen polls for new flags every few
+   seconds, so it also works while messages are sent from another tab.
+7. Sync paused (simulated): the simulator has a switch "Simulate sync paused". While on,
+   every screen shows a banner (amber "Sync paused" pill, "WhatsApp disconnected", "Orders
+   may be out of date. Reconnect to keep them up to date.", and a "Reconnect" link that
+   turns it off), the Orders header shows "● Sync paused", and Settings shows the
+   connection as disconnected. The switch lives in the browser (localStorage), shared by
+   all tabs; it does not stop messages from being processed.
 
 Copy rules: say "Needs review", never "Needs you". Say "Agreed in chat by your
 business", never "You agreed". Never show "paid"; use "Screenshot received · not
