@@ -20,7 +20,7 @@ Status: working prototype, demoed with a home bakery and a simulator. Built for 
 | Eval results | [Read the eval results](docs/EVAL_RESULTS.md) |
 | Opportunity map (FigJam) | [Open the board](https://www.figma.com/board/66DAEYQ63KeV5oMLsGJe5n/CapstoneBYOP_Pooja_AI-Opportunity-Map) |
 | Design (Figma) | [Open the designs](https://www.figma.com/design/3QEBLyRLp0qeIizbC4MX8O/Capstone_BYOP_Pooja_Pakka) |
-| Demo video | [Watch the demo](VIDEO-LINK) |
+| Demo video | [Watch the demo](https://www.loom.com/share/83f8e93cad3c47b9b3c8d3cca7f2b45d) |
 
 ## Quick start for reviewers
 
