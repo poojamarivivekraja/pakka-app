@@ -14,7 +14,7 @@ Status: working prototype, demoed with a home bakery and a simulator. Built for 
 
 | Document | Where |
 | --- | --- |
-| AI PRD | [Open the PRD (PDF)](docs/Capstone_Pooja_Pakka_AI_PRD.docx) | 
+| AI PRD | [Open the PRD (Word Doc)](docs/Capstone_Pooja_Pakka_AI_PRD.docx) | 
 | Presentation | [Open the deck (PDF)](docs/Capstone_Pooja_Pakka_Presentation.pdf) |
 | Cost estimate | [Download the workbook (Excel)](docs/Capstone_Pooja_Pakka_Cost_Estimation.xlsx) |
 | Eval results | [Read the eval results](docs/EVAL_RESULTS.md) |
